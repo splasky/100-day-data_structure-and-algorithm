@@ -3,25 +3,34 @@
 
 #include <stdlib.h>
 
-typedef struct Node_ {
+typedef struct Node Node;
+typedef struct List LinkedList;
+struct Node {
     void* data;
-    struct _Node* prev;
-    struct _Node* next;
-} Node;
+    struct Node* prev;
+    struct Node* next;
+};
 
-typedef struct List_ {
+struct List {
     int size;
     Node* tail;
     Node* head;
-    void (*destory)(struct List_* list);
-} List;
+    void (*destory)(LinkedList* list);
+    int (*remove)(LinkedList* list, Node node);
+    int (*push)(LinkedList* list, void* data);
+    void* (*pop)(LinkedList* list);
+    void* (*peek)(LinkedList* list);
+    Node* (*search)(LinkedList* list, void* data);
+};
 
-List* init_link_list(List* list);
-void list_destory(List* list);
-void list_remove(List* list, Node node);
-void list_push(List* list, Node node);
-void* list_pop(List* list);
-void* list_peek(List* list);
+LinkedList* init_link_list(LinkedList* list);
+void list_destory(LinkedList* list);
+void list_clear(LinkedList* list);
+int list_remove(LinkedList* list, Node node);
+int list_push(LinkedList* list, void* data);
+void* list_pop(LinkedList* list);
+void* list_peek(LinkedList* list);
+Node* search(LinkedList* list, void* data);
 
 /*
  * L:list
