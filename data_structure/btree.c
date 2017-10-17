@@ -293,27 +293,32 @@ static void BTree_erease_real(Btree* self, Node* node, int key)
         _Bool flag = (index == node->n) ? true : false;
 
         if (node->children[index]->n == self->minial_degree - 1) {
-            /* if left child's keys more than minial_degree -1 */
+            /* if left child's keys more than minial_degree-1 */
+            /* borrow from previous */
             if (index != 0 && node->children[index - 1]->n > self->minial_degree - 1) {
                 Node* cur = node->children[index];
                 Node* pre = node->children[index - 1];
 
+                /* keys shift right */
                 for (int j = cur->n - 1; j >= 0; j--)
                     cur->keys[j + 1] = cur->keys[j];
 
                 if (!cur->leaf) {
+                    /* children shift right */
                     for (int j = cur->n; j >= 0; j--)
                         cur->children[j + 1] = cur->children[j];
 
                     cur->children[0] = pre->children[pre->n];
                 }
 
+                /* move middle index to cur */
                 cur->keys[0] = node->keys[index - 1];
                 node->keys[index - 1] = pre->keys[pre->n - 1];
                 cur->n++;
                 pre->n--;
             }
-            /* right children keys more than t-1 */
+            /* right child's keys more than minial_degree-1 */
+            /* borrow from next */
             else if (index != node->n
                 && node->children[index + 1]->n > self->minial_degree - 1) {
                 Node* cur = node->children[index];
@@ -333,8 +338,12 @@ static void BTree_erease_real(Btree* self, Node* node, int key)
                 node->keys[index] = next->keys[0];
                 cur->n++;
                 next->n--;
-            } else // if left child and right child keys == minial_degree-1, merge them
-            {
+            }
+            /* Merge children[index] with it siblings.
+             * If children[index] is the last child, merge it with it previous siblings.
+             * else merge with next siblings.
+             */
+            else {
                 if (index != node->n)
                     BTree_merge(self, node, index);
                 else
