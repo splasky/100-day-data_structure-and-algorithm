@@ -26,16 +26,12 @@ Node* Node_search(Node* self, int k);
 int Node_find_key(Node* self, int key);
 
 typedef struct Btree Btree;
-static void BTree_split_child(Btree* self, Node* parent, int index, Node* child);
-static void BTree_insert_non_full(Btree* self, Node* node, int key);
 void BTree_insert(Btree* self, int key);
 void BTree_traverse(Btree* self);
 Node* BTree_search(const Btree* self, const int k);
 void BTree_remove(Node* self);
 void BTree_delete(Btree* self);
 void BTree_erase(Btree* self, int key);
-static void BTree_erease_real(Btree* tree, Node* node, int key);
-static void BTree_merge(Btree* tree, Node* node, int index);
 
 struct Btree {
     /* private */

@@ -1,5 +1,10 @@
 #include "btree.h"
 
+static void BTree_erease_real(Btree* tree, Node* node, int key);
+static void BTree_merge(Btree* tree, Node* node, int index);
+static void BTree_split_child(Btree* self, Node* parent, int index, Node* child);
+static void BTree_insert_non_full(Btree* self, Node* node, int key);
+
 int Node_find_key(Node* self, int key)
 {
     int idx = 0;
