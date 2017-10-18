@@ -35,7 +35,7 @@ void LinkedList_addFirst(LinkedList* list, void* value);
 /*
  * L:list
  * S:first node
- * N:next node
+ * N:next or prev
  * C:current node
  */
 #define LINKEDLIST_FOREACH(L, S, N, C)                                                   \
