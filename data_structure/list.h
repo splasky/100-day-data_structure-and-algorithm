@@ -3,43 +3,43 @@
 
 #include <stdlib.h>
 
-typedef struct Node Node;
+typedef struct ListNode ListNode;
 typedef struct List LinkedList;
-struct Node {
+
+struct ListNode {
     void* data;
-    struct Node* prev;
-    struct Node* next;
+    ListNode* prev;
+    ListNode* next;
 };
 
 struct List {
-    int size;
-    Node* tail;
-    Node* head;
-    void (*destory)(LinkedList* list);
-    int (*remove)(LinkedList* list, Node node);
-    int (*push)(LinkedList* list, void* data);
-    void* (*pop)(LinkedList* list);
-    void* (*peek)(LinkedList* list);
-    Node* (*search)(LinkedList* list, void* data);
+    int count;
+    ListNode* tail;
+    ListNode* head;
 };
 
-LinkedList* init_link_list(LinkedList* list);
-void list_destory(LinkedList* list);
-void list_clear(LinkedList* list);
-int list_remove(LinkedList* list, Node node);
-int list_push(LinkedList* list, void* data);
-void* list_pop(LinkedList* list);
-void* list_peek(LinkedList* list);
-Node* search(LinkedList* list, void* data);
+#define LinkedList_count(L) ((L)->count)
+#define LinkedList_first(L) ((L)->head)
+#define LinkedList_last(L) ((L)->tail)
+
+LinkedList* New_LinkedList(void);
+void LinkedList_destory(LinkedList* list);
+void LinkedList_clear(LinkedList* list);
+void LinkedList_clear_destory(LinkedList* list);
+void LinkedList_push(LinkedList* list, void* data);
+void* LinkedList_pop(LinkedList* list);
+void* LinkedList_shift(LinkedList* list);
+void* LinkedList_remove(LinkedList* list, ListNode* node);
+void LinkedList_addFirst(LinkedList* list, void* value);
 
 /*
  * L:list
  * S:first node
- * M:next node
- * V:current node
+ * N:next node
+ * C:current node
  */
-#define foreach(L, S, M, V)                                                              \
-    Node* _node = NULL;                                                                  \
-    Node* V = NULL;                                                                      \
-    for (V = _node = L->S; _node != NULL; V = _node = _node->M)
+#define LINKEDLIST_FOREACH(L, S, N, C)                                                   \
+    ListNode* _node = NULL;                                                              \
+    ListNode* C = NULL;                                                                  \
+    for (C = _node = L->S; _node != NULL; C = _node = _node->N)
 #endif /* ifndef LIST_H */
