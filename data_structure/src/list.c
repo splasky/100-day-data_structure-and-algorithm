@@ -1,4 +1,4 @@
-#include "list.h"
+#include "../include/list.h"
 #include <stdlib.h>
 
 LinkedList* New_LinkedList(void) { return calloc(1, sizeof(LinkedList)); }

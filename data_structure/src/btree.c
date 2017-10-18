@@ -1,4 +1,4 @@
-#include "btree.h"
+#include "../include/btree.h"
 
 static void BTree_erease_real(Btree* tree, Node* node, int key);
 static void BTree_merge(Btree* tree, Node* node, int index);
