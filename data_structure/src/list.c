@@ -1,5 +1,38 @@
 #include "../include/list.h"
+#include <stdio.h>
 #include <stdlib.h>
+
+static _Bool LinkedList_is_Over_Bound(LinkedList* list, int index);
+static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, int index);
+
+static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, int index)
+{
+    if (LinkedList_is_Over_Bound(list, index)) {
+        goto error;
+    }
+
+    int i = 0;
+    LINKEDLIST_FOREACH(list, head, next, cur)
+    {
+        if (i == index)
+            break;
+        ++i;
+    }
+
+    return cur;
+error:
+    return NULL;
+}
+static _Bool LinkedList_is_Over_Bound(LinkedList* list, int index)
+{
+    if (index > LinkedList_count(list)) {
+        fprintf(stderr,
+            "Insert into linked list out of bound(linked list length:%d index : %d)\n ",
+            LinkedList_count(list), index);
+        return true;
+    }
+    return false;
+}
 
 LinkedList* New_LinkedList(void) { return calloc(1, sizeof(LinkedList)); }
 
@@ -88,8 +121,73 @@ void* LinkedList_remove(LinkedList* list, ListNode* node)
     }
 
     list->count--;
-    result = node->data;
+    result = node->value;
     free(node);
 
     return result;
+}
+
+void LinkedList_addWithIndex(LinkedList* list, const int index, void* value)
+{
+
+    ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
+    if (!index_node) {
+        goto error;
+    }
+
+    if (LinkedList_first(list) == NULL) {
+        LinkedList_push(list, value);
+        return;
+    }
+
+    ListNode* node = calloc(1, sizeof(ListNode));
+    node->value = value;
+
+    node->prev = index_node->prev;
+    node->next = index_node;
+    index_node->prev = node;
+    index_node->prev->next = node;
+
+    list->count++;
+error:
+    return;
+}
+
+void LinkedList_addALL(LinkedList* list, LinkedList* added)
+{
+    list->tail->next = added->head;
+    added->head->prev = list->tail;
+    list->count += added->count;
+    free(added);
+}
+
+void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* added)
+{
+    ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
+    if (!index_node) {
+        goto error;
+    }
+
+    index_node->next->prev = added->tail;
+    added->tail->next = index_node->next;
+    index_node->next = added->head;
+    added->head->prev = index_node;
+
+    list->count += added->count;
+    free(added);
+
+error:
+    return;
+}
+
+void* LinkedList_remove_index(LinkedList* list, const int index)
+{
+    ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
+    if (!index_node) {
+        goto error;
+    }
+
+    return LinkedList_remove(list, index_node);
+error:
+    return NULL;
 }
