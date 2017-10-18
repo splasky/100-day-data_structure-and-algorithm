@@ -19,15 +19,17 @@ void LinkedList_clear(LinkedList* list)
 {
     LINKEDLIST_FOREACH(list, head, next, cur) { free(cur->prev); }
 }
+
 void LinkedList_clear_destory(LinkedList* list)
 {
     LinkedList_clear(list);
     LinkedList_destory(list);
 }
-void LinkedList_push(LinkedList* list, void* data)
+
+void LinkedList_push(LinkedList* list, void* value)
 {
     ListNode* node = calloc(1, sizeof(ListNode));
-    node->data = data;
+    node->value = value;
 
     if (LinkedList_last(list) == NULL) {
         list->head = node;
@@ -54,7 +56,7 @@ void* LinkedList_shift(LinkedList* list)
 void LinkedList_addFirst(LinkedList* list, void* value)
 {
     ListNode* node = calloc(1, sizeof(ListNode));
-    node->data = value;
+    node->value = value;
 
     if (LinkedList_first(list) == NULL) {
         list->head = node;

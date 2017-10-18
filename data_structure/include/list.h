@@ -1,13 +1,14 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 typedef struct ListNode ListNode;
 typedef struct List LinkedList;
 
 struct ListNode {
-    void* data;
+    void* value;
     ListNode* prev;
     ListNode* next;
 };
@@ -26,7 +27,7 @@ LinkedList* New_LinkedList(void);
 void LinkedList_destory(LinkedList* list);
 void LinkedList_clear(LinkedList* list);
 void LinkedList_clear_destory(LinkedList* list);
-void LinkedList_push(LinkedList* list, void* data);
+void LinkedList_push(LinkedList* list, void* value);
 void* LinkedList_pop(LinkedList* list);
 void* LinkedList_shift(LinkedList* list);
 void* LinkedList_remove(LinkedList* list, ListNode* node);
