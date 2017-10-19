@@ -109,15 +109,15 @@ void* LinkedList_remove(LinkedList* list, ListNode* node)
     if (LinkedList_first(list) == node && LinkedList_last(list) == node) {
         list->head = NULL;
         list->tail = NULL;
-    } else if (LinkedList_first(list) == NULL) {
+    } else if (LinkedList_first(list) == node) {
         list->head = list->head->next;
         list->head->prev = NULL;
-    } else if (LinkedList_last(list) == NULL) {
+    } else if (LinkedList_last(list) == node) {
         list->tail = list->tail->prev;
         list->tail->next = NULL;
     } else {
-        node->prev->next = node->next;
         node->next->prev = node->prev;
+        node->prev->next = node->next;
     }
 
     list->count--;
