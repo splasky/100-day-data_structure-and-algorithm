@@ -1,4 +1,5 @@
 #include "../include/list.h"
+#include "../include/dbg.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,7 +35,14 @@ static _Bool LinkedList_is_Over_Bound(LinkedList* list, int index)
     return false;
 }
 
-LinkedList* New_LinkedList(void) { return calloc(1, sizeof(LinkedList)); }
+LinkedList* New_LinkedList(void)
+{
+    LinkedList* list = calloc(1, sizeof(LinkedList));
+    check_mem(list);
+    return list;
+error:
+    return NULL;
+}
 
 void LinkedList_destory(LinkedList* list)
 {
@@ -62,6 +70,7 @@ void LinkedList_clear_destory(LinkedList* list)
 void LinkedList_push(LinkedList* list, void* value)
 {
     ListNode* node = calloc(1, sizeof(ListNode));
+    check_mem(node);
     node->value = value;
 
     if (LinkedList_last(list) == NULL) {
@@ -73,6 +82,8 @@ void LinkedList_push(LinkedList* list, void* value)
         list->tail = node;
     }
     list->count++;
+error:
+    return;
 }
 
 void* LinkedList_pop(LinkedList* list)
@@ -89,6 +100,7 @@ void* LinkedList_shift(LinkedList* list)
 void LinkedList_addFirst(LinkedList* list, void* value)
 {
     ListNode* node = calloc(1, sizeof(ListNode));
+    check_mem(node);
     node->value = value;
 
     if (LinkedList_first(list) == NULL) {
@@ -100,6 +112,8 @@ void LinkedList_addFirst(LinkedList* list, void* value)
         list->head = node;
     }
     list->count++;
+error:
+    return;
 }
 
 void* LinkedList_remove(LinkedList* list, ListNode* node)
