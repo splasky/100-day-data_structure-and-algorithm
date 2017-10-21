@@ -1,10 +1,10 @@
-#include "include/stack.h"
+#include "../include/stack.h"
 #include <stdio.h>
 
 char* tests[] = { "test1 data", "test2 data", "test3 data" };
 #define NUM_TESTS 3
 
-int main(int argc, char* argv[])
+int main(void)
 {
     Stack* stack = New_Stack();
     int i = 0;
