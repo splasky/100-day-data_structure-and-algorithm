@@ -1,4 +1,5 @@
 #include "../include/stack.h"
+#include "unit.h"
 #include <stdio.h>
 
 char* tests[] = { "test1 data", "test2 data", "test3 data" };
@@ -6,6 +7,7 @@ char* tests[] = { "test1 data", "test2 data", "test3 data" };
 
 int main(void)
 {
+    debug("----Test_stack.c----");
     Stack* stack = New_Stack();
     int i = 0;
     for (i = 0; i < NUM_TESTS; i++) {
