@@ -25,9 +25,13 @@
 #define RUN_TESTS(name)                                                                  \
     int main(int argc, char* argv[])                                                     \
     {                                                                                    \
+        if (argc < 1) {                                                                  \
+            log_err("No input tests.");                                                  \
+            exit(1);                                                                     \
+        }                                                                                \
         argc = 1;                                                                        \
-        debug("----- RUNNING: %s", argv[0]);                                             \
-        printf("----\nRUNNING: %s\n", argv[0]);                                          \
+        debug("RUNNING: %s", argv[0]);                                                   \
+        printf(C_MAGENTA "----RUNNING: %s\n", argv[0]);                                  \
         char* result = name();                                                           \
         if (result != 0) {                                                               \
             printf(C_RED "FAILED: %s\n", result);                                        \
