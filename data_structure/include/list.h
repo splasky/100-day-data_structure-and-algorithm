@@ -36,6 +36,7 @@ void LinkedList_addFirst(LinkedList* list, void* value);
 void LinkedList_addWithIndex(LinkedList* list, const int index, void* value);
 void LinkedList_addALL(LinkedList* list, LinkedList* added);
 void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* listadd);
+void* LinkedList_get(LinkedList* list, const int index);
 
 /*
  * L:list
@@ -43,6 +44,7 @@ void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* l
  * N:next or prev
  * C:current node
  */
+/* TODO:_node change to hash */
 #define LINKEDLIST_FOREACH(L, S, N, C)                                                   \
     ListNode* _node = NULL;                                                              \
     ListNode* C = NULL;                                                                  \
