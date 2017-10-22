@@ -33,7 +33,7 @@ Node* New_Node(const int t, const _Bool leaf)
 
     return node;
 error:
-    printf("allocate new node failed\n");
+    fprintf(stderr, "allocate new node failed\n");
     return NULL;
 }
 
