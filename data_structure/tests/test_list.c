@@ -1,5 +1,6 @@
 #include "../include/list.h"
 #include "unit.h"
+#include <stdint.h>
 
 static LinkedList* list = NULL;
 char* test1 = "test1";
@@ -19,15 +20,22 @@ TEST(test_destory)
     return NULL;
 }
 
-TEST(test_clear_destory)
+LinkedList* SetTestingList(int size)
 {
     LinkedList* llist = New_LinkedList();
-    int a[] = { 1, 2, 3, 4 };
-    int* p = a;
-    LinkedList_push(llist, (void*)p);
-    LinkedList_push(llist, (void*)(p + 1));
-    LinkedList_push(llist, (void*)(p + 2));
-    LinkedList_push(llist, (void*)(p + 3));
+
+    for (int i = 0; i < size; i++) {
+        int* p = calloc(1, sizeof(int));
+        *p = i;
+        LinkedList_push(llist, (void*)p);
+    }
+
+    return llist;
+}
+
+TEST(test_clear_destory)
+{
+    LinkedList* llist = SetTestingList(10);
     LinkedList_clear_destory(llist);
     return NULL;
 }
@@ -81,50 +89,33 @@ TEST(test_shift)
 
 TEST(test_index)
 {
-    int arr[] = { 1, 2, 3, 4, 5 };
-    int* p = arr;
-
-    LinkedList_push(list, (void*)(p));
-    LinkedList_push(list, (void*)(p + 1));
-    LinkedList_push(list, (void*)(p + 2));
-    LinkedList_push(list, (void*)(p + 3));
-    LinkedList_push(list, (void*)(p + 4));
-
+    LinkedList* llist = SetTestingList(10);
     int num = 3;
-    int* ptr = &num;
 
-    LinkedList_addWithIndex(list, 3, ptr);
+    LinkedList_addWithIndex(llist, 3, (void*)(&num));
 
-    int* curr_ptr = LinkedList_remove_index(list, 3);
-    unit_assert((*curr_ptr) == 4, "Wrong on index");
+    int* curr_ptr = LinkedList_remove_index(llist, 3);
+    unit_assert((*curr_ptr) == 3, "Wrong on index");
 
+    LinkedList_clear_destory(llist);
     return NULL;
 }
 
 TEST(test_add_all)
 {
-    LinkedList* list1 = New_LinkedList();
-    LinkedList* list2 = New_LinkedList();
+    LinkedList* list1 = SetTestingList(20);
+    LinkedList* list2 = SetTestingList(30);
 
-    int arr[] = { 1, 2, 3, 4, 5 };
-    int* p = arr;
+    int* val = LinkedList_get(list1, 3);
+    unit_assert(*val == 3, "Wrong on push into list1");
 
-    LinkedList_push(list1, (void*)(p));
-    LinkedList_push(list1, (void*)(p + 1));
-    LinkedList_push(list1, (void*)(p + 2));
-    LinkedList_push(list1, (void*)(p + 3));
-    LinkedList_push(list1, (void*)(p + 4));
-
-    LinkedList_push(list2, (void*)(p));
-    LinkedList_push(list2, (void*)(p + 1));
-    LinkedList_push(list2, (void*)(p + 2));
-    LinkedList_push(list2, (void*)(p + 3));
-    LinkedList_push(list2, (void*)(p + 4));
+    val = LinkedList_get(list2, 2);
+    unit_assert(*val == 2, "Wrong on push into list2");
 
     LinkedList_addALLWithIndex(list1, 3, list2);
 
-    int* curr_value = LinkedList_remove_index(list1, 3);
-    unit_assert((*curr_value) == 3, "Wrong on addALLWithIndex");
+    val = LinkedList_remove_index(list1, 4);
+    unit_assert((*val) == 0, "Wrong on addALLWithIndex");
     LinkedList_clear_destory(list1);
 
     return NULL;

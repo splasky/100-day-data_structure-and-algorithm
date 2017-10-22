@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static _Bool LinkedList_is_Over_Bound(LinkedList* list, int index);
-static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, int index);
+static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index);
+static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index);
 
-static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, int index)
+static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index)
 {
     if (LinkedList_is_Over_Bound(list, index)) {
         goto error;
@@ -24,14 +24,16 @@ static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, int index)
 error:
     return NULL;
 }
-static _Bool LinkedList_is_Over_Bound(LinkedList* list, int index)
+
+static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
 {
-    if (index > LinkedList_count(list)) {
-        fprintf(stderr,
+    if (index > LinkedList_count(list) || LinkedList_count(list) < 0) {
+        log_err(
             "Insert into linked list out of bound(linked list length:%d index : %d)\n ",
             LinkedList_count(list), index);
         return true;
     }
+
     return false;
 }
 
@@ -52,13 +54,24 @@ void LinkedList_destory(LinkedList* list)
             free(cur->prev);
         }
     }
-    free(LinkedList_last(list));
-    free(list);
+
+    if (LinkedList_last(list) != NULL) {
+        free(LinkedList_last(list));
+    }
+
+    if (list) {
+        free(list);
+    }
 }
 
 void LinkedList_clear(LinkedList* list)
 {
-    LINKEDLIST_FOREACH(list, head, next, cur) { free(cur->prev); }
+    LINKEDLIST_FOREACH(list, head, next, cur)
+    {
+        if (cur->value) {
+            free(cur->value);
+        }
+    }
 }
 
 void LinkedList_clear_destory(LinkedList* list)
@@ -119,15 +132,19 @@ error:
 void* LinkedList_remove(LinkedList* list, ListNode* node)
 {
     void* result = NULL;
+    check(LinkedList_first(list) && LinkedList_last(list), "List is empty");
+    check(node, "Node can't be NULL");
 
     if (LinkedList_first(list) == node && LinkedList_last(list) == node) {
         list->head = NULL;
         list->tail = NULL;
     } else if (LinkedList_first(list) == node) {
         list->head = list->head->next;
+        check(list->head != NULL, "Invalid list, get a first that is a NULL");
         list->head->prev = NULL;
     } else if (LinkedList_last(list) == node) {
         list->tail = list->tail->prev;
+        check(list->tail != NULL, "Invalid list, get a last that is a NULL");
         list->tail->next = NULL;
     } else {
         node->next->prev = node->prev;
@@ -139,15 +156,15 @@ void* LinkedList_remove(LinkedList* list, ListNode* node)
     free(node);
 
     return result;
+error:
+    return result;
 }
 
 void LinkedList_addWithIndex(LinkedList* list, const int index, void* value)
 {
 
     ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
-    if (!index_node) {
-        goto error;
-    }
+    check(index_node, "get node error");
 
     if (LinkedList_first(list) == NULL) {
         LinkedList_push(list, value);
@@ -159,8 +176,8 @@ void LinkedList_addWithIndex(LinkedList* list, const int index, void* value)
 
     node->prev = index_node->prev;
     node->next = index_node;
-    index_node->prev = node;
     index_node->prev->next = node;
+    index_node->prev = node;
 
     list->count++;
 error:
@@ -169,27 +186,33 @@ error:
 
 void LinkedList_addALL(LinkedList* list, LinkedList* added)
 {
-    list->tail->next = added->head;
-    added->head->prev = list->tail;
-    list->count += added->count;
-    free(added);
+    LinkedList_addALLWithIndex(list, (LinkedList_count(list) - 1), added);
 }
 
 void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* added)
 {
-    ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
-    if (!index_node) {
+    if (added->head == NULL) {
         goto error;
     }
 
-    index_node->next->prev = added->tail;
-    added->tail->next = index_node->next;
-    index_node->next = added->head;
-    added->head->prev = index_node;
+    ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
+    check(index_node, "Merge two linkedlist failed");
+
+    if (index_node->next == NULL) {
+        index_node->next = added->head;
+        added->head->prev = index_node;
+    } else if (LinkedList_count(list) > 0 && LinkedList_count(added) > 0) {
+        index_node->next->prev = added->tail;
+        added->tail->next = index_node->next;
+        index_node->next = added->head;
+        added->head->prev = index_node;
+    } else if (LinkedList_first(list) == NULL) {
+        list->head = added->head;
+        list->tail = added->tail;
+    }
 
     list->count += added->count;
     free(added);
-
 error:
     return;
 }
@@ -197,11 +220,19 @@ error:
 void* LinkedList_remove_index(LinkedList* list, const int index)
 {
     ListNode* index_node = LinkedList_getNodeFromIndex(list, index);
-    if (!index_node) {
-        goto error;
-    }
-
+    check(index_node, "Remove from index failed");
     return LinkedList_remove(list, index_node);
+error:
+    debug("list count:%d ,index:%d", LinkedList_count(list), index);
+    return NULL;
+}
+
+void* LinkedList_get(LinkedList* list, const int index)
+{
+    ListNode* node = LinkedList_getNodeFromIndex(list, index);
+    check(node, "can't get index in list");
+    return node->value;
+
 error:
     return NULL;
 }
