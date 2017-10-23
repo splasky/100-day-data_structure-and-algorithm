@@ -27,7 +27,7 @@ LinkedList* SetTestingList(int size)
     for (int i = 0; i < size; i++) {
         int* p = calloc(1, sizeof(int));
         *p = i;
-        LinkedList_push(llist, (void*)p);
+        LinkedList_push(llist, p);
     }
 
     return llist;
@@ -92,10 +92,10 @@ TEST(test_index)
     LinkedList* llist = SetTestingList(10);
     int num = 3;
 
-    LinkedList_addWithIndex(llist, 3, (void*)(&num));
+    LinkedList_addWithIndex(llist, 3, (&num));
 
     int* curr_ptr = LinkedList_remove_index(llist, 3);
-    unit_assert((*curr_ptr) == 3, "Wrong on index");
+    unit_assert(*(curr_ptr) == 3, "Wrong on index");
 
     LinkedList_clear_destory(llist);
     return NULL;
@@ -115,7 +115,7 @@ TEST(test_add_all)
     LinkedList_addALLWithIndex(list1, 3, list2);
 
     val = LinkedList_remove_index(list1, 4);
-    unit_assert((*val) == 0, "Wrong on addALLWithIndex");
+    unit_assert(*(val) == 0, "Wrong on addALLWithIndex");
     LinkedList_clear_destory(list1);
 
     return NULL;
