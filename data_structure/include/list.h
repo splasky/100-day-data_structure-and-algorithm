@@ -37,9 +37,11 @@ void LinkedList_addWithIndex(LinkedList* list, const int index, void* value);
 void LinkedList_addALL(LinkedList* list, LinkedList* added);
 void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* listadd);
 void* LinkedList_get(LinkedList* list, const int index);
+/* TODO:need test */
 int LinkedList_item_exists(
     LinkedList* list, void* value, int (*comparator)(void* a, void* b));
-void* LinkedList_sorted(LinkedList* list, int (*comparator)(void* a, void* b));
+int LinkedList_sorted(LinkedList* list, int (*comparator)(const void* a, const void* b));
+LinkedList* deep_copy(LinkedList* list);
 
 /*
  * L:list

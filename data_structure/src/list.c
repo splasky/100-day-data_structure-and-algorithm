@@ -2,9 +2,12 @@
 #include "../include/dbg.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index);
 static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index);
+static int ListNode_item_exists(
+    ListNode* node, void* value, int (*comparator)(void* a, void* b));
 
 static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index)
 {
@@ -35,6 +38,20 @@ static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
     }
 
     return false;
+}
+
+static int ListNode_item_exists(
+    ListNode* node, void* value, int (*comparator)(void* a, void* b))
+{
+    if (node == NULL) {
+        return 0;
+    }
+
+    if (comparator(value, node->value)) {
+        return 1;
+    }
+
+    return ListNode_item_exists(node->next, value, comparator);
 }
 
 LinkedList* New_LinkedList(void)
@@ -241,4 +258,47 @@ void* LinkedList_get(LinkedList* list, const int index)
 
 error:
     return NULL;
+}
+
+int LinkedList_item_exists(
+    LinkedList* list, void* value, int (*comparator)(void* a, void* b))
+
+{
+    if (list == NULL || list->head == NULL) {
+        return -1;
+    }
+
+    ListNode* curr = LinkedList_first(list);
+    return ListNode_item_exists(curr, value, comparator);
+}
+
+LinkedList* deep_copy(LinkedList* list)
+{
+    if (!list) {
+        return NULL;
+    }
+    LinkedList* new_list = New_LinkedList();
+
+    LINKEDLIST_FOREACH(list, head, next, curr)
+    {
+        if (curr) {
+            /* TODO:sizeof(curr->value) this may wiil crash */
+            void* value = calloc(1, sizeof(curr->value));
+            value = curr->value;
+            LinkedList_push(new_list, value);
+        }
+    }
+
+    return new_list;
+}
+
+/* try quick sorted */
+int LinkedList_sorted(LinkedList* list, int (*comparator)(const void* a, const void* b))
+{
+    if (list == NULL) {
+        return 0;
+    }
+    qsort(list, list->count, sizeof(ListNode), comparator);
+    /* return bubble_sort(list, comparator); */
+    return 1;
 }
