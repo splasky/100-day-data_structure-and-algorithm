@@ -52,15 +52,18 @@ void LinkedList_destory(LinkedList* list)
     {
         if (cur->prev) {
             free(cur->prev);
+            cur->prev = NULL;
         }
     }
 
     if (LinkedList_last(list) != NULL) {
         free(LinkedList_last(list));
+        list->tail = NULL;
     }
 
     if (list) {
         free(list);
+        list = NULL;
     }
 }
 
@@ -70,6 +73,7 @@ void LinkedList_clear(LinkedList* list)
     {
         if (cur->value) {
             free(cur->value);
+            cur->value = NULL;
         }
     }
 }
@@ -154,6 +158,7 @@ void* LinkedList_remove(LinkedList* list, ListNode* node)
     list->count--;
     result = node->value;
     free(node);
+    node = NULL;
 
     return result;
 error:
@@ -213,6 +218,7 @@ void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* a
 
     list->count += added->count;
     free(added);
+    added = NULL;
 error:
     return;
 }
