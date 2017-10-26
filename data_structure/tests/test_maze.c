@@ -5,14 +5,14 @@
 
 #define maze_size (8)
 static int maze[maze_size][maze_size] = { { 1, 1, 1, 1, 1, 1, 1, 1 },
-    { 1, 0, 1, 0, 0, 0, 0, 0 }, { 1, 0, 1, 0, 0, 1, 0, 1 }, { 1, 0, 1, 0, 0, 1, 1, 1 },
+    { 1, 0, 1, 0, 0, 0, 0, 1 }, { 1, 0, 1, 0, 0, 1, 0, 1 }, { 1, 0, 1, 0, 0, 1, 1, 1 },
     { 1, 0, 0, 0, 0, 1, 0, 1 }, { 1, 1, 0, 0, 0, 0, 0, 1 }, { 1, 1, 1, 1, 0, 1, 0, 1 },
     { 1, 1, 1, 1, 1, 1, 1, 1 } };
 
 int findPath(int x, int y)
 {
     /* congrulation!
-     * finish
+     * finish.
      */
 
     if (x == 0 && y == 0) {
@@ -27,7 +27,7 @@ int findPath(int x, int y)
             > 0) {
             return 1;
         } else {
-            /* oh no~ */
+            /* go back */
             maze[x][y] = 0;
             return 0;
         }
@@ -52,5 +52,6 @@ int main(void)
     print_maze();
     printf("after:\n");
     findPath(6, 6);
+    print_maze();
     return 0;
 }
