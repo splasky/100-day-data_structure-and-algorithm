@@ -1,6 +1,7 @@
 #ifndef __dbg_h__
 #define __dbg_h__
 
+#include "util.h"
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,30 +10,22 @@
 #define debug(M, ...)
 #else
 #define debug(M, ...)                                                                    \
-    fprintf(stderr, C_GRAY "[DEBUG] %s:%d: " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+    fprintf(stderr, C_GRAY "[DEBUG] %s:%d: " M "\n" C_NORMAL, __FILE__, __LINE__,        \
+        ##__VA_ARGS__)
 #endif
-
-#define C_NORMAL "\033[0m"
-#define C_RED "\033[31m"
-#define C_GREEN "\033[32m"
-#define C_YELLOW "\033[33m"
-#define C_BULE "\033[34m"
-#define C_MAGENTA "\033[35m"
-#define C_CYAN "\033[36m"
-#define C_GRAY "\033[90m"
-
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
 
 #define log_err(M, ...)                                                                  \
-    fprintf(stderr, C_RED "[ERROR] (%s:%d: errno: %s) " M "\n", __FILE__, __LINE__,      \
-        clean_errno(), ##__VA_ARGS__)
+    fprintf(stderr, C_RED "[ERROR] (%s:%d: errno: %s) " M "\n" C_NORMAL, __FILE__,       \
+        __LINE__, clean_errno(), ##__VA_ARGS__)
 
 #define log_warn(M, ...)                                                                 \
-    fprintf(stderr, C_YELLOW "[WARN] (%s:%d: errno: %s) " M "\n", __FILE__, __LINE__,    \
-        clean_errno(), ##__VA_ARGS__)
+    fprintf(stderr, C_YELLOW "[WARN] (%s:%d: errno: %s) " M "\n" C_NORMAL, __FILE__,     \
+        __LINE__, clean_errno(), ##__VA_ARGS__)
 
 #define log_info(M, ...)                                                                 \
-    fprintf(stderr, C_NORMAL "[INFO] (%s:%d) " M "\n", __FILE__, __LINE__, ##__VA_ARGS__)
+    fprintf(stderr, C_BLUE "[INFO] (%s:%d) " M "\n" C_NORMAL, __FILE__, __LINE__,        \
+        ##__VA_ARGS__)
 
 #define check(A, M, ...)                                                                 \
     if (!(A)) {                                                                          \

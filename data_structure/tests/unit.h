@@ -31,14 +31,14 @@
         }                                                                                \
         argc = 1;                                                                        \
         debug("RUNNING: %s", argv[0]);                                                   \
-        printf(C_MAGENTA "----RUNNING: %s\n", argv[0]);                                  \
+        printf(C_MAGENTA "----RUNNING: %s\n" C_NORMAL, argv[0]);                         \
         char* result = name();                                                           \
         if (result != 0) {                                                               \
-            printf(C_RED "FAILED: %s\n", result);                                        \
+            printf(C_RED "FAILED: %s\n" C_NORMAL, result);                               \
         } else {                                                                         \
-            printf(C_GREEN "ALL TESTS PASSED\n");                                        \
+            printf(C_GREEN "ALL TESTS PASSED\n" C_NORMAL);                               \
         }                                                                                \
-        printf("Tests run: %d\n", tests_run);                                            \
+        printf(C_CYAN "Tests run: %d\n" C_NORMAL, tests_run);                            \
         exit(result != 0);                                                               \
     }
 
