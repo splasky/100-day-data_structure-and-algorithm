@@ -3,7 +3,7 @@
 
 BSTree* bstree = NULL;
 
-TEST(create_btree)
+TEST(create_bstree)
 {
     bstree = New_BSTree(NULL);
     unit_assert(bstree != NULL, "create btree failed.");
@@ -13,14 +13,13 @@ TEST(create_btree)
 TEST(destory)
 {
     BSTree_destory(bstree);
-    unit_assert(bstree == NULL, "destory failed");
     return NULL;
 }
 
 static inline int print_bstree_node(BSTreeNode* node)
 {
     printf("%d %d\n", *(int*)node->key, *(int*)node->data);
-    return 1;
+    return 0;
 }
 
 TEST(set_get_traverse)
@@ -35,7 +34,10 @@ TEST(set_get_traverse)
 
     BSTree_traverse(bstree, print_bstree_node);
 
-    int* p = BSTree_get(bstree, 3);
+    int key = 3;
+    int* ptr = &key;
+    int* p = BSTree_get(bstree, ptr);
+    debug("%d\n", *p);
     unit_assert(*p == 3, "get key from bstree failed");
 
     return NULL;
@@ -43,16 +45,20 @@ TEST(set_get_traverse)
 
 TEST(delete)
 {
-    int* p = BSTree_delete(bstree, 5);
-    unit_assert(*p == 5, "delete key failed");
+    int key = 4;
+    int* ptr = &key;
+    int* p = BSTree_delete(bstree, ptr);
+    debug("%d\n", *p);
+    unit_assert(*p == 4, "delete key failed");
     return NULL;
 }
 
 TEST(all_tests)
 {
     unit_suite_start();
-    unit_run_test(create_btree);
+    unit_run_test(create_bstree);
     unit_run_test(set_get_traverse);
+    unit_run_test(delete);
     unit_run_test(destory);
 
     return NULL;
