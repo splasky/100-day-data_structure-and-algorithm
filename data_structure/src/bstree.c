@@ -212,6 +212,8 @@ static inline void* BSTreeNode_delete(BSTree* bstree, BSTreeNode* node, void* ke
         }
         return node;
     }
+
+    return NULL;
 }
 
 void* BSTree_delete(BSTree* bstree, void* key)
