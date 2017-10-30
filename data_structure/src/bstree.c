@@ -137,4 +137,92 @@ int BSTree_traverse(BSTree* bstree, BSTree_traverse_cb bstree_traverse)
 
     return 0;
 }
-void* BSTree_delete(BSTree* bstree, void* key);
+
+static inline BSTreeNode* BSTreeNode_find_min(BSTreeNode* node)
+{
+    while (node->left) {
+        BSTreeNode_find_min(node->left);
+    }
+
+    return node;
+}
+
+static inline void BSTreeNode_swap(BSTreeNode* a, BSTreeNode* b)
+{
+    void* tmp = NULL;
+    tmp = a->key;
+    a->key = b->key;
+    b->key = tmp;
+
+    tmp = a->data;
+    a->data = b->data;
+    b->data = a->data;
+}
+
+static inline void BSTreeNode_replace_node_in_parent(
+    BSTree* bstree, BSTreeNode* node, BSTreeNode* new_node)
+{
+
+    if (node->parent) {
+        if (node == node->parent->left) {
+            node->parent->left = new_node;
+        } else {
+            node->parent->right = new_node;
+        }
+    } else {
+        bstree->root = new_node;
+    }
+
+    if (new_node) {
+        new_node->parent = node->parent;
+    }
+}
+
+static inline void* BSTreeNode_delete(BSTree* bstree, BSTreeNode* node, void* key)
+{
+    int compare = bstree->compare(node->key, key);
+
+    if (compare < 0) {
+        /* scan left */
+        if (node->left) {
+            BSTreeNode_delete(bstree, node->left, key);
+        }
+    } else if (compare > 0) {
+        if (node->right) {
+            BSTreeNode_delete(bstree, node->right, key);
+        }
+    } else {
+        if (node->left && node->right) {
+            BSTreeNode* changed = BSTreeNode_find_min(node->right);
+            BSTreeNode_swap(changed, node);
+            BSTreeNode_replace_node_in_parent(bstree, changed, changed->right);
+            return changed;
+        } else if (node->left) {
+            BSTreeNode_replace_node_in_parent(bstree, node, node->left);
+        } else if (node->right) {
+            BSTreeNode_replace_node_in_parent(bstree, node, node->right);
+        } else {
+            // leaf
+            BSTreeNode_replace_node_in_parent(bstree, node, NULL);
+        }
+        return node;
+    }
+
+    return NULL;
+}
+
+void* BSTree_delete(BSTree* bstree, void* key)
+{
+    void* data = NULL;
+    if (bstree->root) {
+        BSTreeNode* tmp_node = BSTreeNode_delete(bstree, bstree->root, key);
+
+        if (tmp_node) {
+            data = tmp_node->data;
+            free(tmp_node);
+            tmp_node = NULL;
+        }
+    }
+
+    return data;
+}
