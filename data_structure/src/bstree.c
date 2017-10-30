@@ -10,7 +10,7 @@ static int int_compare(const void* restrict a, const void* restrict b)
     return (x > y) - (y > x);
 }
 
-BSTree* New_BStree(BSTree_compare bstree_compare)
+BSTree* New_BSTree(BSTree_compare bstree_compare)
 {
     BSTree* bstree = calloc(1, sizeof(BSTree));
     check_mem(bstree);
@@ -84,6 +84,7 @@ int BSTree_set(BSTree* bstree, void* key, void* data)
         BSTreeNode_set(bstree, bstree->root, key, data);
     }
 
+    return 0;
 error:
     log_err("set node failed");
     return -1;
@@ -186,10 +187,14 @@ static inline void* BSTreeNode_delete(BSTree* bstree, BSTreeNode* node, void* ke
         /* scan left */
         if (node->left) {
             BSTreeNode_delete(bstree, node->left, key);
+        } else {
+            return NULL;
         }
     } else if (compare > 0) {
         if (node->right) {
             BSTreeNode_delete(bstree, node->right, key);
+        } else {
+            return NULL;
         }
     } else {
         if (node->left && node->right) {
@@ -207,8 +212,6 @@ static inline void* BSTreeNode_delete(BSTree* bstree, BSTreeNode* node, void* ke
         }
         return node;
     }
-
-    return NULL;
 }
 
 void* BSTree_delete(BSTree* bstree, void* key)
@@ -216,7 +219,6 @@ void* BSTree_delete(BSTree* bstree, void* key)
     void* data = NULL;
     if (bstree->root) {
         BSTreeNode* tmp_node = BSTreeNode_delete(bstree, bstree->root, key);
-
         if (tmp_node) {
             data = tmp_node->data;
             free(tmp_node);
