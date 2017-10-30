@@ -18,8 +18,8 @@ struct BSTree_t {
     BSTree_compare compare;
 };
 
-BSTree* New_BStree(BSTree_compare bstree_compare);
-void BStree_destory(BSTree* bstree);
+BSTree* New_BSTree(BSTree_compare bstree_compare);
+void BSTree_destory(BSTree* bstree);
 
 int BSTree_set(BSTree* bstree, void* key, void* data);
 void* BSTree_get(BSTree* bstree, void* key);
