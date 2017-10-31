@@ -26,6 +26,16 @@ error:
 
 int BSTreeNode_destory(BSTreeNode* node)
 {
+    if (node->key) {
+        free(node->key);
+        node->key = NULL;
+    }
+
+    if (node->data) {
+        free(node->data);
+        node->data = NULL;
+    }
+
     free(node);
     node = NULL;
     return 0;
