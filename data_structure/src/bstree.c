@@ -186,34 +186,34 @@ static inline void* BSTreeNode_delete(BSTree* bstree, BSTreeNode* node, void* ke
     if (compare < 0) {
         /* scan left */
         if (node->left) {
-            BSTreeNode_delete(bstree, node->left, key);
+            return BSTreeNode_delete(bstree, node->left, key);
         } else {
             return NULL;
         }
-    } else if (compare > 0) {
-        if (node->right) {
-            BSTreeNode_delete(bstree, node->right, key);
-        } else {
-            return NULL;
-        }
-    } else {
-        if (node->left && node->right) {
-            BSTreeNode* changed = BSTreeNode_find_min(node->right);
-            BSTreeNode_swap(changed, node);
-            BSTreeNode_replace_node_in_parent(bstree, changed, changed->right);
-            return changed;
-        } else if (node->left) {
-            BSTreeNode_replace_node_in_parent(bstree, node, node->left);
-        } else if (node->right) {
-            BSTreeNode_replace_node_in_parent(bstree, node, node->right);
-        } else {
-            // leaf
-            BSTreeNode_replace_node_in_parent(bstree, node, NULL);
-        }
-        return node;
     }
 
-    return NULL;
+    if (compare > 0) {
+        if (node->right) {
+            return BSTreeNode_delete(bstree, node->right, key);
+        } else {
+            return NULL;
+        }
+    }
+
+    if (node->left && node->right) {
+        BSTreeNode* changed = BSTreeNode_find_min(node->right);
+        BSTreeNode_swap(changed, node);
+        BSTreeNode_replace_node_in_parent(bstree, changed, changed->right);
+        return changed;
+    } else if (node->left) {
+        BSTreeNode_replace_node_in_parent(bstree, node, node->left);
+    } else if (node->right) {
+        BSTreeNode_replace_node_in_parent(bstree, node, node->right);
+    } else {
+        // leaf
+        BSTreeNode_replace_node_in_parent(bstree, node, NULL);
+    }
+    return node;
 }
 
 void* BSTree_delete(BSTree* bstree, void* key)
