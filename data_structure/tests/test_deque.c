@@ -11,7 +11,7 @@ TEST(allo_new_deque)
     return NULL;
 }
 
-TEST(deque_bush_back)
+TEST(deque_push_back)
 {
 
     for (int i = 1; i <= 256; i += i) {
@@ -21,7 +21,10 @@ TEST(deque_bush_back)
     }
 
     while (Deque_count(dq) > 0) {
-        printf("%d\n", *(int*)Deque_pop_front(dq));
+        int* c = (int*)Deque_pop_front(dq);
+        printf("%d\n", *c);
+        free(c);
+        c = NULL;
     }
 
     unit_assert(Deque_count(dq) == 0, "test push pop failed");
@@ -38,9 +41,8 @@ TEST(all_tests)
 {
     unit_suite_start();
     unit_run_test(allo_new_deque);
-    unit_run_test(deque_bush_back);
+    unit_run_test(deque_push_back);
     unit_run_test(destory_deque);
-
     return NULL;
 }
 
