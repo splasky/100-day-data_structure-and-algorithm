@@ -116,7 +116,11 @@ TEST(test_add_all)
 
     val = LinkedList_remove_index(list1, 4);
     unit_assert(*(val) == 0, "Wrong on addALLWithIndex");
+    free(val);
+
     LinkedList_clear_destory(list1);
+    free(list2);
+    list2 = NULL;
 
     return NULL;
 }
