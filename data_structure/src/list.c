@@ -234,8 +234,6 @@ void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* a
     }
 
     list->count += added->count;
-    free(added);
-    added = NULL;
 error:
     return;
 }
