@@ -28,4 +28,6 @@ typedef int (*BSTree_traverse_cb)(BSTreeNode* node);
 int BSTree_traverse(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
 void* BSTree_delete(BSTree* bstree, void* key);
 
+int BSTree_traverse_postOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
+int BSTree_traverse_preOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
 #endif /* end of include guard: BSTREE_H_LECXYVZA */
