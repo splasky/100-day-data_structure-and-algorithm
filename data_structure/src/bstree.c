@@ -26,6 +26,10 @@ error:
 
 int BSTreeNode_destory(BSTreeNode* node)
 {
+    if (node == NULL) {
+        return 0;
+    }
+
     if (node->key) {
         free(node->key);
         node->key = NULL;
@@ -63,7 +67,8 @@ void BSTree_destory(BSTree* bstree)
     }
 }
 
-static inline void BSTreeNode_set(BSTree* bstree, BSTreeNode* node, void* key, void* data)
+static inline void BSTreeNode_set(
+    BSTree* bstree, BSTreeNode* node, void* restrict key, void* restrict data)
 {
 
     if (bstree->compare(node->key, key) <= 0) {

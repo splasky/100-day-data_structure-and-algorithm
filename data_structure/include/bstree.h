@@ -21,7 +21,7 @@ struct BSTree_t {
 BSTree* New_BSTree(BSTree_compare bstree_compare);
 void BSTree_destory(BSTree* bstree);
 
-int BSTree_set(BSTree* bstree, void* key, void* data);
+int BSTree_set(BSTree* bstree, void* restrict key, void* restrict data);
 void* BSTree_get(BSTree* bstree, void* key);
 
 typedef int (*BSTree_traverse_cb)(BSTreeNode* node);

@@ -28,8 +28,10 @@ TEST(set_get_traverse)
     int size = sizeof(i) / sizeof(i[0]);
     for (int j = 0; j < size; j++) {
         int* p = malloc(sizeof(int));
+        int* q = malloc(sizeof(int));
         *p = i[j];
-        BSTree_set(bstree, p, p);
+        *q = i[j];
+        BSTree_set(bstree, p, q);
     }
 
     BSTree_traverse(bstree, print_bstree_node);
