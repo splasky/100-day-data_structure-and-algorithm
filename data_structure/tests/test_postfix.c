@@ -67,6 +67,7 @@ void postfix(char* infix, size_t size)
     }
 
     /* print */
+    printf("inside stack:");
     for (int i = 0; i < size; ++i) {
         char* p = Stack_pop(postfix_stack);
         if (p == NULL) {
@@ -74,6 +75,7 @@ void postfix(char* infix, size_t size)
         }
         printf("%c", *p);
     }
+    printf("\n");
 
     Stack_destory(op_stack);
     Stack_destory(postfix_stack);
@@ -82,6 +84,8 @@ void postfix(char* infix, size_t size)
 int main(void)
 {
     char* str = "(3+5)*8-6*(5-3/2+3*(4+5))";
+    printf("Running test_postfix:\n");
+    printf("origin:%s\n", str);
     postfix(str, strlen(str));
     return 0;
 }
