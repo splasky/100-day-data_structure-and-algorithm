@@ -35,7 +35,7 @@ int priority(char* c)
     }
 }
 
-void postfix(char* infix, size_t size)
+void postfix(char* infix, int size)
 {
     char* curr = infix;
 
