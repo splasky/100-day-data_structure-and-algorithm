@@ -136,6 +136,7 @@ static inline int BSTreeNode_traverse(
         if (rc != 0)
             return rc;
     }
+
     if (node->right) {
         rc = BSTreeNode_traverse(node->right, bstree_traverse);
         if (rc != 0)
@@ -245,3 +246,46 @@ void* BSTree_delete(BSTree* bstree, void* key)
 
     return data;
 }
+
+static inline int BSTreeNode_inOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
+{
+    int rc = 0;
+    if (node->left) {
+        rc = BSTreeNode_traverse(node->left, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    rc = bstree_traverse(node);
+
+    if (node->right) {
+        rc = BSTreeNode_traverse(node->right, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    return 0;
+}
+
+static inline int BSTreeNode_preOrder(
+    BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
+{
+    int rc = 0;
+    rc = bstree_traverse(node);
+    if (node->left) {
+        rc = BSTreeNode_traverse(node->left, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    if (node->right) {
+        rc = BSTreeNode_traverse(node->right, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    return 0;
+}
+
+int BSTree_traverse_preOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
+int BSTree_traverse_inOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
