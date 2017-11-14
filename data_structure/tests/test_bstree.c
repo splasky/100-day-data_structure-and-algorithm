@@ -34,7 +34,12 @@ TEST(set_get_traverse)
         BSTree_set(bstree, p, q);
     }
 
-    BSTree_traverse(bstree, print_bstree_node);
+    BSTree_traverse(bstree, BSTreeNode_traverse_postOrder, print_bstree_node);
+    printf("\n");
+    BSTree_traverse(bstree, BSTreeNode_traverse_preOrder, print_bstree_node);
+    printf("\n");
+    BSTree_traverse(bstree, BSTreeNode_traverse_inOrder, print_bstree_node);
+    printf("\n");
 
     int key = 3;
     int* ptr = &key;
