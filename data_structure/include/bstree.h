@@ -25,9 +25,12 @@ int BSTree_set(BSTree* bstree, void* restrict key, void* restrict data);
 void* BSTree_get(BSTree* bstree, void* key);
 
 typedef int (*BSTree_traverse_cb)(BSTreeNode* node);
-int BSTree_traverse(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
+typedef int (*BSTreeNode_traverse)(BSTreeNode* node, BSTree_traverse_cb bstree_traverse);
+int BSTree_traverse(BSTree* bstree, BSTreeNode_traverse node_traverse,
+    BSTree_traverse_cb bstree_traverse);
 void* BSTree_delete(BSTree* bstree, void* key);
 
-int BSTree_traverse_preOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
-int BSTree_traverse_inOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
+int BSTreeNode_traverse_preOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse);
+int BSTreeNode_traverse_postOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse);
+int BSTreeNode_traverse_inOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse);
 #endif /* end of include guard: BSTREE_H_LECXYVZA */

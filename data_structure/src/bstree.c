@@ -61,7 +61,7 @@ error:
 void BSTree_destory(BSTree* bstree)
 {
     if (bstree) {
-        BSTree_traverse(bstree, BSTreeNode_destory);
+        BSTree_traverse(bstree, BSTreeNode_traverse_postOrder, BSTreeNode_destory);
         free(bstree);
         bstree = NULL;
     }
@@ -127,18 +127,17 @@ void* BSTree_get(BSTree* bstree, void* key)
     return node == NULL ? NULL : node->data;
 }
 
-static inline int BSTreeNode_traverse(
-    BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
+int BSTreeNode_traverse_postOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
 {
     int rc = 0;
     if (node->left) {
-        rc = BSTreeNode_traverse(node->left, bstree_traverse);
+        rc = BSTreeNode_traverse_postOrder(node->left, bstree_traverse);
         if (rc != 0)
             return rc;
     }
 
     if (node->right) {
-        rc = BSTreeNode_traverse(node->right, bstree_traverse);
+        rc = BSTreeNode_traverse_postOrder(node->right, bstree_traverse);
         if (rc != 0)
             return rc;
     }
@@ -146,10 +145,50 @@ static inline int BSTreeNode_traverse(
     return bstree_traverse(node);
 }
 
-int BSTree_traverse(BSTree* bstree, BSTree_traverse_cb bstree_traverse)
+int BSTreeNode_traverse_inOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
+{
+    int rc = 0;
+    if (node->left) {
+        rc = BSTreeNode_traverse_inOrder(node->left, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    rc = bstree_traverse(node);
+
+    if (node->right) {
+        rc = BSTreeNode_traverse_inOrder(node->right, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    return rc;
+}
+
+int BSTreeNode_traverse_preOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
+{
+    int rc = 0;
+    rc = bstree_traverse(node);
+    if (node->left) {
+        rc = BSTreeNode_traverse_preOrder(node->left, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    if (node->right) {
+        rc = BSTreeNode_traverse_preOrder(node->right, bstree_traverse);
+        if (rc != 0)
+            return rc;
+    }
+
+    return rc;
+}
+
+int BSTree_traverse(
+    BSTree* bstree, BSTreeNode_traverse node_traverse, BSTree_traverse_cb bstree_traverse)
 {
     if (bstree->root) {
-        return BSTreeNode_traverse(bstree->root, bstree_traverse);
+        return node_traverse(bstree->root, bstree_traverse);
     }
 
     return 0;
@@ -246,46 +285,3 @@ void* BSTree_delete(BSTree* bstree, void* key)
 
     return data;
 }
-
-static inline int BSTreeNode_inOrder(BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
-{
-    int rc = 0;
-    if (node->left) {
-        rc = BSTreeNode_traverse(node->left, bstree_traverse);
-        if (rc != 0)
-            return rc;
-    }
-
-    rc = bstree_traverse(node);
-
-    if (node->right) {
-        rc = BSTreeNode_traverse(node->right, bstree_traverse);
-        if (rc != 0)
-            return rc;
-    }
-
-    return 0;
-}
-
-static inline int BSTreeNode_preOrder(
-    BSTreeNode* node, BSTree_traverse_cb bstree_traverse)
-{
-    int rc = 0;
-    rc = bstree_traverse(node);
-    if (node->left) {
-        rc = BSTreeNode_traverse(node->left, bstree_traverse);
-        if (rc != 0)
-            return rc;
-    }
-
-    if (node->right) {
-        rc = BSTreeNode_traverse(node->right, bstree_traverse);
-        if (rc != 0)
-            return rc;
-    }
-
-    return 0;
-}
-
-int BSTree_traverse_preOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
-int BSTree_traverse_inOrder(BSTree* bstree, BSTree_traverse_cb bstree_traverse);
