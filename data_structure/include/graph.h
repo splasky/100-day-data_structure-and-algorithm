@@ -31,6 +31,7 @@ Graph* Graph_create(Graph_compare compare);
 void Graph_addEdge(Graph* graph, void* source, void* dest);
 void Graph_destory(Graph* graph);
 _Bool Graph_has_edge(Graph* graph, void* source, void* dest);
+void Graph_add_vertex_not_exists(Graph* graph, void* source);
 
 typedef void (*Graph_traverse_cb)(Graph* graph, void* source, void* data);
 void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* data);

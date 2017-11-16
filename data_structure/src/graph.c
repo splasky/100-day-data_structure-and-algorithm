@@ -91,7 +91,7 @@ error:
     return NULL;
 }
 
-void Graph_add_Vertex_not_exists(Graph* graph, void* source)
+void Graph_add_vertex_not_exists(Graph* graph, void* source)
 {
     if (!Graph_is_vertex_in_graph(graph, source)) {
         AdjList* adjlist = New_AdjList(source);
@@ -155,8 +155,8 @@ error:
 
 void Graph_addEdge(Graph* graph, void* source, void* dest)
 {
-    Graph_add_Vertex_not_exists(graph, source);
-    Graph_add_Vertex_not_exists(graph, dest);
+    Graph_add_vertex_not_exists(graph, source);
+    Graph_add_vertex_not_exists(graph, dest);
 
     /* iterate adjlist */
     AdjList* curr = graph->adjlist;
