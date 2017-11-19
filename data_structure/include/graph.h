@@ -40,7 +40,7 @@ void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* dat
 #define Graph_edge_count(GRAPH) (GRAPH->num_of_edges)
 
 /* Graph algorithms */
-void Graph_Dfs(Graph* graph, void* data);
-void Graph_Bfs(Graph* graph, void* data);
+void Graph_DFS_traverse(Graph* graph, void* source);
+void Graph_BFS_traverse(Graph* graph, void* source);
 
 #endif /* end of include guard: GRAPH_H_J2HT0K9X */
