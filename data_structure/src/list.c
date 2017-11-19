@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index);
-static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index);
-static int ListNode_item_exists(
-    ListNode* node, void* value, int (*comparator)(void* a, void* b));
+static inline _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index);
+static inline ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index);
+static inline int ListNode_item_exists(
+    ListNode* node, void* value, LinkedList_Comparator comparator);
 
-static ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index)
+static inline ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index)
 {
     if (LinkedList_is_Over_Bound(list, index)) {
         goto error;
@@ -28,7 +28,7 @@ error:
     return NULL;
 }
 
-static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
+static inline _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
 {
     if (index > LinkedList_count(list) || LinkedList_count(list) < 0) {
         log_err(
@@ -40,8 +40,8 @@ static _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
     return false;
 }
 
-static int ListNode_item_exists(
-    ListNode* node, void* value, int (*comparator)(void* a, void* b))
+static inline int ListNode_item_exists(
+    ListNode* node, void* value, LinkedList_Comparator comparator)
 {
     if (node == NULL) {
         return 0;
@@ -259,8 +259,7 @@ error:
 }
 
 int LinkedList_item_exists(
-    LinkedList* list, void* value, int (*comparator)(void* a, void* b))
-
+    LinkedList* list, void* value, LinkedList_Comparator comparator)
 {
     if (list == NULL || list->head == NULL) {
         return -1;
