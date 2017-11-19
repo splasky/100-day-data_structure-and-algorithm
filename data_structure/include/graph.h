@@ -28,7 +28,7 @@ typedef struct Graph_t {
 } Graph;
 
 Graph* Graph_create(Graph_compare compare);
-void Graph_addEdge(Graph* graph, void* source, void* dest);
+void Graph_add_edge(Graph* graph, void* source, void* dest);
 void Graph_destory(Graph* graph);
 _Bool Graph_has_edge(Graph* graph, void* source, void* dest);
 void Graph_add_vertex_not_exists(Graph* graph, void* source);
@@ -36,8 +36,8 @@ void Graph_add_vertex_not_exists(Graph* graph, void* source);
 typedef void (*Graph_traverse_cb)(Graph* graph, void* source, void* data);
 void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* data);
 
-#define Graph_Vertex_Count(GRAPH) (GRAPH->num_of_vertices)
-#define Graph_Edge_Count(GRAPH) (GRAPH->num_of_edges)
+#define Graph_vertex_count(GRAPH) (GRAPH->num_of_vertices)
+#define Graph_edge_count(GRAPH) (GRAPH->num_of_edges)
 
 /* Graph algorithms */
 void Graph_Dfs(Graph* graph, void* data);
