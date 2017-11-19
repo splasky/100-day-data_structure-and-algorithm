@@ -1,5 +1,9 @@
 #include "../include/graph.h"
 #include "../include/dbg.h"
+#include "../include/list.h"
+#include "../include/queue.h"
+#include "../include/stack.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -209,6 +213,85 @@ _Bool Graph_has_edge(Graph* graph, void* source, void* dest)
 
 void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* data) {}
 
+static inline AdjList* Graph_find_AdjList(Graph* graph, void* key)
+{
+    check(graph, "Graph is empty");
+    check(key, "Key is empty");
+    AdjList* curr = graph->adjlist;
+    while (curr) {
+        if (graph->compare(curr->key, key) == 0) {
+            return curr;
+        }
+        curr = curr->next;
+    }
+
+error:
+    return NULL;
+}
 /* Graph search algorithms */
-void Graph_Dfs(Graph* graph, void* data) {}
-void Graph_Bfs(Graph* graph, void* data);
+void Graph_DFS_traverse(Graph* graph, void* source)
+{
+    /* store visited AdjListNOde inside visited */
+    LinkedList* visited = New_LinkedList();
+    Stack* stack = New_Stack();
+
+    /* find source */
+    AdjList* adjlist = Graph_find_AdjList(graph, source);
+    if (!adjlist) {
+        goto source_not_found;
+    }
+
+    /* from source work to destination */
+    Stack_push(stack, adjlist->head);
+    LinkedList_push(visited, adjlist->key);
+
+    while (Stack_count(stack) != 0) {
+        AdjListNode* next_dest = Stack_pop(stack);
+        while (next_dest != NULL) {
+            /* if next_dest's dest not inside visited */
+            if (!LinkedList_item_exists(visited, next_dest->dest, graph->compare)) {
+                Stack_push(stack, next_dest->dest);
+                LinkedList_push(visited, next_dest->dest);
+                /* TODO: do something */
+            }
+            next_dest = next_dest->next;
+        }
+    }
+
+source_not_found:
+    log_err("Source not found in graph");
+}
+
+void Graph_BFS_traverse(Graph* graph, void* source)
+{
+
+    /* store visited AdjListNOde inside visited */
+    LinkedList* visited = New_LinkedList();
+    Queue* queue = New_Queue();
+
+    /* find source */
+    AdjList* adjlist = Graph_find_AdjList(graph, source);
+    if (!adjlist) {
+        goto source_not_found;
+    }
+
+    /* from source work to destination */
+    Queue_send(queue, adjlist->head);
+    LinkedList_push(visited, adjlist->key);
+
+    while (Queue_count(queue) != 0) {
+        AdjListNode* next_dest = Queue_recv(queue);
+        while (next_dest != NULL) {
+            /* if next_dest's dest not inside visited */
+            if (!LinkedList_item_exists(visited, next_dest->dest, graph->compare)) {
+                Queue_send(queue, next_dest->dest);
+                LinkedList_push(visited, next_dest->dest);
+                /* TODO: do something */
+            }
+            next_dest = next_dest->next;
+        }
+    }
+
+source_not_found:
+    log_err("Source not found in graph");
+}
