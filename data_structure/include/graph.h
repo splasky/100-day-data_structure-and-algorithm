@@ -33,8 +33,8 @@ void Graph_destory(Graph* graph);
 _Bool Graph_has_edge(Graph* graph, void* source, void* dest);
 void Graph_add_vertex_not_exists(Graph* graph, void* source);
 
-typedef void (*Graph_traverse_cb)(Graph* graph, void* source, void* data);
-void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* data);
+typedef void (*Graph_print_cb)(void* value);
+void Graph_print_graph(const Graph* graph, Graph_print_cb graph_print);
 
 #define Graph_vertex_count(GRAPH) (GRAPH->num_of_vertices)
 #define Graph_edge_count(GRAPH) (GRAPH->num_of_edges)

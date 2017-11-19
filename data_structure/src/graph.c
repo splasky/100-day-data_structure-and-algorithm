@@ -211,7 +211,20 @@ _Bool Graph_has_edge(Graph* graph, void* source, void* dest)
     return false;
 }
 
-void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* data) {}
+void Graph_print_graph(const Graph* graph, Graph_print_cb graph_print)
+{
+    check(graph, "Graph is empty");
+    for (AdjList* head = graph->adjlist; head != NULL; head = head->next) {
+        graph_print(head->key);
+        for (AdjListNode* node = head->head; node != NULL; node = node->next) {
+            graph_print(node->dest);
+        }
+        printf("\n");
+    }
+
+error:
+    return;
+}
 
 static inline AdjList* Graph_find_AdjList(Graph* graph, void* key)
 {
