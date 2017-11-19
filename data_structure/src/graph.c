@@ -29,7 +29,7 @@ error:
     return NULL;
 }
 
-static _Bool Graph_is_vertex_in_graph(Graph* graph, void* key)
+static inline _Bool Graph_is_vertex_in_graph(Graph* graph, void* key)
 {
     check(graph, "graph is empty");
     AdjList* curr = graph->adjlist;
@@ -45,7 +45,7 @@ error:
     return false;
 }
 
-static void AdjList_destory(AdjList* adjlist)
+static inline void AdjList_destory(AdjList* adjlist)
 {
     if (!adjlist->head) {
         goto finally;
@@ -117,7 +117,7 @@ error:
     log_err("Add vertex not exists failed");
 }
 
-static _Bool AdjList_is_node_in_list(Graph* graph, AdjList* adjlist, void* dest)
+static inline _Bool AdjList_is_node_in_list(Graph* graph, AdjList* adjlist, void* dest)
 {
     check(adjlist, "adjlist is empty");
     AdjListNode* curr = adjlist->head;
