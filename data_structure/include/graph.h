@@ -38,6 +38,9 @@ void Graph_foreach(Graph* graph, Graph_traverse_cb func, void* source, void* dat
 
 #define Graph_vertex_count(GRAPH) (GRAPH->num_of_vertices)
 #define Graph_edge_count(GRAPH) (GRAPH->num_of_edges)
+/* TODO */
+void Graph_remove_edge(Graph* graph, void* source, void* dest);
+void Graph_remove_vertex(Graph* graph, void* vertex);
 
 /* Graph algorithms */
 void Graph_DFS_traverse(Graph* graph, void* source);
