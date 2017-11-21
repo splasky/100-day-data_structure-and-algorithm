@@ -299,3 +299,51 @@ int LinkedList_sorted(LinkedList* list, int (*comparator)(const void* a, const v
     /* return bubble_sort(list, comparator); */
     return 1;
 }
+
+void* LinkedList_find_value(
+    LinkedList* list, void* key, LinkedList_Comparator comparator);
+ListNode* LinkedList_find_node(
+    LinkedList* list, void* toFind, LinkedList_Comparator comparator);
+void LinkedList_remove_data(
+    LinkedList* list, void* data, LinkedList_Comparator comparator);
+
+void* LinkedList_Iterate(LinkedList_Iterator* iterator)
+{
+    check(iterator, "Iterator is NULL.");
+    void* data = NULL;
+
+    if (iterator->position && iterator->list->count != 0) {
+        data = iterator->position->value;
+        iterator->position = iterator->position->next;
+        iterator->index++;
+    }
+
+    return data;
+error:
+    return NULL;
+}
+
+void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* list)
+{
+    check(iterator != NULL, "Iterator is NULL");
+    check(list != NULL, "LinkedList is NULL");
+
+    iterator->index = 0;
+    iterator->list = list;
+    iterator->position = list->head;
+
+error:
+    log_err("InitializeIterator failed");
+}
+
+void LinkedList_ResetIterator(LinkedList_Iterator* iterator)
+{
+    check(iterator != NULL, "Iterator is NULL");
+    check(iterator->list != NULL, "List is NULL");
+
+    iterator->index = 0;
+    iterator->position = iterator->list->head;
+
+error:
+    log_err("Reset iterator failed");
+}
