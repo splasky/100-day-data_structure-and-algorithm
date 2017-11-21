@@ -2,10 +2,11 @@
 #define LIST_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef struct ListNode ListNode;
-typedef struct List LinkedList;
+typedef struct LinkedList_t LinkedList;
 
 struct ListNode {
     void* value;
@@ -13,11 +14,17 @@ struct ListNode {
     ListNode* next;
 };
 
-struct List {
+struct LinkedList_t {
     int count;
     ListNode* tail;
     ListNode* head;
 };
+
+typedef struct LinkedList_Iterator_t {
+    LinkedList* list;
+    ListNode* position;
+    uint64_t index;
+} LinkedList_Iterator;
 
 #define LinkedList_count(L) ((L)->count)
 #define LinkedList_first(L) (((L)->head != NULL) ? (L)->head : NULL)
@@ -44,9 +51,16 @@ int LinkedList_item_exists(
 int LinkedList_sorted(LinkedList* list, LinkedList_Comparator comparator);
 LinkedList* LinkedList_deep_copy(LinkedList* list);
 /* TODO:need implement and test*/
-void* LinkedList_find_value(LinkedList* list, void* data);
-ListNode* LinkedList_find_node(LinkedList* list, void* toFind);
-void LinkedList_remove_data(LinkedList* list, void* data);
+void* LinkedList_find_value(
+    LinkedList* list, void* key, LinkedList_Comparator comparator);
+ListNode* LinkedList_find_node(
+    LinkedList* list, void* toFind, LinkedList_Comparator comparator);
+void LinkedList_remove_data(
+    LinkedList* list, void* data, LinkedList_Comparator comparator);
+
+void* LinkedList_Iterate(LinkedList_Iterator* iterator);
+void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* list);
+void LinkedList_ResetIterator(LinkedList_Iterator* iterator);
 
 /*
  * L:list
