@@ -269,7 +269,7 @@ int LinkedList_item_exists(
     return ListNode_item_exists(curr, value, comparator);
 }
 
-LinkedList* deep_copy(LinkedList* list)
+LinkedList* LinkedList_deep_copy(LinkedList* list)
 {
     if (!list) {
         return NULL;
@@ -278,8 +278,7 @@ LinkedList* deep_copy(LinkedList* list)
 
     LINKEDLIST_FOREACH(list, head, next, curr)
     {
-        if (curr) {
-            /* TODO:sizeof(curr->value) this may wiil crash */
+        if (curr && curr->value) {
             void* value = calloc(1, sizeof(curr->value));
             value = curr->value;
             LinkedList_push(new_list, value);
@@ -289,23 +288,56 @@ LinkedList* deep_copy(LinkedList* list)
     return new_list;
 }
 
-/* try quick sorted */
 int LinkedList_sorted(LinkedList* list, int (*comparator)(const void* a, const void* b))
 {
     if (list == NULL) {
         return 0;
     }
     qsort(list, list->count, sizeof(ListNode), comparator);
-    /* return bubble_sort(list, comparator); */
     return 1;
 }
 
-void* LinkedList_find_value(
-    LinkedList* list, void* key, LinkedList_Comparator comparator);
+void* LinkedList_find_value(LinkedList* list, void* key, LinkedList_Comparator comparator)
+{
+    check(list, "List is NULL.");
+    check(key, "Key is NULL.");
+
+    ListNode* node = LinkedList_find_node(list, key, comparator);
+    if (node) {
+        return node->value;
+    }
+
+error:
+    log_info("Key not found.");
+    return NULL;
+}
+
 ListNode* LinkedList_find_node(
-    LinkedList* list, void* toFind, LinkedList_Comparator comparator);
+    LinkedList* list, void* toFind, LinkedList_Comparator comparator)
+{
+    check(list, "List is NULL.");
+    check(toFind, "Key is NULL.");
+
+    ListNode* curr = list->head;
+    while (curr != NULL) {
+        if (comparator(curr->value, toFind) == 0) {
+            return curr;
+        }
+        curr = curr->next;
+    }
+
+error:
+    return NULL;
+}
+
 void LinkedList_remove_data(
-    LinkedList* list, void* data, LinkedList_Comparator comparator);
+    LinkedList* list, void* data, LinkedList_Comparator comparator)
+{
+    ListNode* node = LinkedList_find_node(list, data, comparator);
+    if (node) {
+        LinkedList_remove(list, node);
+    }
+}
 
 void* LinkedList_Iterate(LinkedList_Iterator* iterator)
 {
