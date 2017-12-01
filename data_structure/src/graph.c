@@ -34,6 +34,12 @@ static inline _Bool Graph_is_vertex_in_graph(Graph* graph, void* key)
 {
     check(graph, "graph is empty");
     AdjList* curr = graph->adjlist;
+
+    /* if curr->key is null, we need to init it. */
+    if (!curr || !curr->key) {
+        return false;
+    }
+
     while (curr) {
         if (graph->compare(curr->key, key) == 0) {
             return true;
@@ -87,8 +93,7 @@ Graph* Graph_create(Graph_compare compare)
 
     graph->num_of_vertices = 0;
     graph->compare = (compare != NULL) ? compare : int_compare;
-    graph->adjlist = malloc(sizeof(AdjList));
-    check_mem(graph->adjlist);
+    graph->adjlist = NULL;
 
     return graph;
 error:
@@ -114,13 +119,20 @@ void Graph_add_vertex_not_exists(Graph* graph, void* source)
         curr->next = adjlist;
         graph->num_of_vertices++;
     }
+    return;
+
 error:
     log_err("Add vertex not exists failed");
+    exit(EXIT_FAILURE);
 }
 
 static inline _Bool AdjList_is_node_in_list(Graph* graph, AdjList* adjlist, void* dest)
 {
     check(adjlist, "adjlist is empty");
+    if (!adjlist->head) {
+        return false;
+    }
+
     AdjListNode* curr = adjlist->head;
     while (curr->next) {
         if (graph->compare(curr->dest, dest) == 0) {
@@ -155,11 +167,12 @@ static void AdjList_add_node_not_exists(
         curr_node->next = new_node;
         adjlist->num_of_members++;
     }
+    return;
 error:
     log_err("Add vertex not exists failed");
 }
 
-void Graph_addEdge(Graph* graph, void* source, void* dest, int weight)
+void Graph_add_edge(Graph* graph, void* source, void* dest, int weight)
 {
     Graph_add_vertex_not_exists(graph, source);
     Graph_add_vertex_not_exists(graph, dest);
@@ -182,13 +195,16 @@ void Graph_destory(Graph* graph)
         goto finally;
     }
 
-    const int num_of_vertices = graph->num_of_vertices;
-    for (int i = 0; i < num_of_vertices; ++i) {
-        AdjList_destory(graph->adjlist);
+    AdjList* curr_list = graph->adjlist;
+    while (curr_list->next) {
+        AdjList* prev = curr_list;
+        curr_list = curr_list->next;
+        free(prev);
+        prev = NULL;
     }
 
-finally:
     free(graph);
+finally:
     graph = NULL;
 }
 
@@ -243,6 +259,7 @@ static inline AdjList* Graph_find_AdjList(Graph* graph, void* key)
 error:
     return NULL;
 }
+
 /* Graph search algorithms */
 void Graph_DFS_traverse(Graph* graph, void* source)
 {
