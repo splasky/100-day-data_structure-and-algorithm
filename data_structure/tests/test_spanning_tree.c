@@ -66,6 +66,7 @@ void minSpanTree(LinkedList* list)
     ListNode* ptr = LinkedList_first(list);
     int total = 0;
 
+    /* init graph */
     for (int i = 1; i < MAX_VERTICES; ++i) {
         vertex[i] = -1;
     }
