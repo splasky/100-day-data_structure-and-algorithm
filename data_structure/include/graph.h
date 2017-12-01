@@ -5,6 +5,7 @@
 
 typedef struct AdjListNode_t {
     void* dest;
+    int weight;
     struct AdjListNode_t* next;
 } AdjListNode;
 
@@ -28,7 +29,7 @@ typedef struct Graph_t {
 } Graph;
 
 Graph* Graph_create(Graph_compare compare);
-void Graph_add_edge(Graph* graph, void* source, void* dest);
+void Graph_add_edge(Graph* graph, void* source, void* dest, int weight);
 void Graph_destory(Graph* graph);
 _Bool Graph_has_edge(Graph* graph, void* source, void* dest);
 void Graph_add_vertex_not_exists(Graph* graph, void* source);

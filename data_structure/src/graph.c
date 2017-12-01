@@ -7,11 +7,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static AdjListNode* New_AdjListNode(void* dest)
+static AdjListNode* New_AdjListNode(void* dest, int weight)
 {
     AdjListNode* node = malloc(sizeof(AdjListNode));
     node->dest = dest;
     node->next = NULL;
+    node->weight = (weight) ? weight : 0;
     return node;
 }
 
@@ -133,10 +134,11 @@ error:
     return false;
 }
 
-static void AdjList_add_node_not_exists(Graph* graph, AdjList* adjlist, void* dest)
+static void AdjList_add_node_not_exists(
+    Graph* graph, AdjList* adjlist, void* dest, int weight)
 {
     if (!AdjList_is_node_in_list(graph, adjlist, dest)) {
-        AdjListNode* new_node = New_AdjListNode(dest);
+        AdjListNode* new_node = New_AdjListNode(dest, weight);
         check_mem(new_node);
         /* add adjlist to graph */
         if (!adjlist->head) {
@@ -157,7 +159,7 @@ error:
     log_err("Add vertex not exists failed");
 }
 
-void Graph_addEdge(Graph* graph, void* source, void* dest)
+void Graph_addEdge(Graph* graph, void* source, void* dest, int weight)
 {
     Graph_add_vertex_not_exists(graph, source);
     Graph_add_vertex_not_exists(graph, dest);
@@ -167,7 +169,7 @@ void Graph_addEdge(Graph* graph, void* source, void* dest)
     while (curr) {
         if (graph->compare(curr->key, source) == 0) {
             /* iterate adjlist nodes */
-            AdjList_add_node_not_exists(graph, curr, dest);
+            AdjList_add_node_not_exists(graph, curr, dest, weight);
             break;
         }
         curr = curr->next;
