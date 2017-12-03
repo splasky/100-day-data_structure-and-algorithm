@@ -86,46 +86,6 @@ static int int_compare(const void* a, const void* b)
     return (x > y) - (y > x);
 }
 
-Graph* Graph_create(Graph_compare compare)
-{
-    Graph* graph = malloc(sizeof(graph));
-    check_mem(graph);
-
-    graph->num_of_vertices = 0;
-    graph->compare = (compare != NULL) ? compare : int_compare;
-    graph->adjlist = NULL;
-
-    return graph;
-error:
-    log_err("Create graph failed.");
-    return NULL;
-}
-
-void Graph_add_vertex_not_exists(Graph* graph, void* source)
-{
-    if (!Graph_is_vertex_in_graph(graph, source)) {
-        AdjList* adjlist = New_AdjList(source);
-        check_mem(adjlist);
-        /* add adjlist to graph */
-        if (!graph->adjlist) {
-            graph->adjlist = adjlist;
-            return;
-        }
-
-        AdjList* curr = graph->adjlist;
-        while (curr->next) {
-            curr = curr->next;
-        }
-        curr->next = adjlist;
-        graph->num_of_vertices++;
-    }
-    return;
-
-error:
-    log_err("Add vertex not exists failed");
-    exit(EXIT_FAILURE);
-}
-
 static inline _Bool AdjList_is_node_in_list(Graph* graph, AdjList* adjlist, void* dest)
 {
     check(adjlist, "adjlist is empty");
@@ -172,6 +132,85 @@ error:
     log_err("Add vertex not exists failed");
 }
 
+AdjList* Graph_find_AdjList(Graph* graph, void* key)
+{
+    check(graph, "Graph is empty");
+    check(key, "Key is empty");
+    AdjList* curr = graph->adjlist;
+    while (curr) {
+        if (graph->compare(curr->key, key) == 0) {
+            return curr;
+        }
+        curr = curr->next;
+    }
+
+error:
+    return NULL;
+}
+
+AdjListNode* Graph_find_AdjNode(Graph* graph, void* key, void* dest)
+{
+    check(graph, "Graph is empty");
+    check(key, "key is empty");
+    check(dest, "dest is NULL");
+
+    AdjList* adjlist = Graph_find_AdjList(graph, key);
+    if (!adjlist) {
+        return NULL;
+    }
+
+    AdjListNode* curr = adjlist->head;
+    while (curr) {
+        if (graph->compare(curr->dest, dest) == 0) {
+            return curr;
+        }
+        curr = curr->next;
+    }
+
+error:
+    return NULL;
+}
+
+Graph* Graph_create(Graph_compare compare)
+{
+    Graph* graph = malloc(sizeof(graph));
+    check_mem(graph);
+
+    graph->num_of_vertices = 0;
+    graph->compare = (compare != NULL) ? compare : int_compare;
+    graph->adjlist = NULL;
+
+    return graph;
+error:
+    log_err("Create graph failed.");
+    return NULL;
+}
+
+void Graph_add_vertex_not_exists(Graph* graph, void* source)
+{
+    if (!Graph_is_vertex_in_graph(graph, source)) {
+        AdjList* adjlist = New_AdjList(source);
+        check_mem(adjlist);
+        /* add adjlist to graph */
+        if (!graph->adjlist) {
+            graph->adjlist = adjlist;
+            return;
+        }
+
+        AdjList* curr = graph->adjlist;
+        while (curr->next) {
+            curr = curr->next;
+        }
+        curr->next = adjlist;
+        graph->num_of_vertices++;
+    }
+    return;
+
+error:
+    log_err("Add vertex not exists failed");
+    exit(EXIT_FAILURE);
+}
+
 void Graph_add_edge(Graph* graph, void* source, void* dest, int weight)
 {
     Graph_add_vertex_not_exists(graph, source);
@@ -211,6 +250,10 @@ finally:
 _Bool Graph_has_edge(Graph* graph, void* source, void* dest)
 {
     AdjList* curr = graph->adjlist;
+    if (!curr) {
+        return false;
+    }
+
     while (curr) {
         if (graph->compare(curr->key, source) == 0) {
             /* iterate adjlist nodes */
@@ -242,22 +285,6 @@ void Graph_print_graph(const Graph* graph, Graph_print_cb graph_print)
 
 error:
     return;
-}
-
-static inline AdjList* Graph_find_AdjList(Graph* graph, void* key)
-{
-    check(graph, "Graph is empty");
-    check(key, "Key is empty");
-    AdjList* curr = graph->adjlist;
-    while (curr) {
-        if (graph->compare(curr->key, key) == 0) {
-            return curr;
-        }
-        curr = curr->next;
-    }
-
-error:
-    return NULL;
 }
 
 /* Graph search algorithms */

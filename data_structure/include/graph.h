@@ -34,11 +34,15 @@ void Graph_destory(Graph* graph);
 _Bool Graph_has_edge(Graph* graph, void* source, void* dest);
 void Graph_add_vertex_not_exists(Graph* graph, void* source);
 
-typedef void (*Graph_print_cb)(void* value);
+typedef void (*Graph_print_cb)(const void* value);
 void Graph_print_graph(const Graph* graph, Graph_print_cb graph_print);
 
 #define Graph_vertex_count(GRAPH) (GRAPH->num_of_vertices)
 #define Graph_edge_count(GRAPH) (GRAPH->num_of_edges)
+
+AdjList* Graph_find_AdjList(Graph* graph, void* key);
+AdjListNode* Graph_find_AdjNode(Graph* graph, void* key, void* dest);
+
 /* TODO */
 void Graph_remove_edge(Graph* graph, void* source, void* dest);
 void Graph_remove_vertex(Graph* graph, void* vertex);

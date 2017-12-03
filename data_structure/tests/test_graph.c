@@ -28,7 +28,7 @@ TEST(test_create)
     return NULL;
 }
 
-void graph_print_cb(void* source) { printf("%d\t", *(int*)source); }
+void graph_print_cb(const void* source) { printf("%d\t", *(int*)source); }
 
 TEST(test_print_graph)
 {
