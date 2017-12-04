@@ -194,6 +194,7 @@ void Graph_add_vertex_not_exists(Graph* graph, void* source)
         /* add adjlist to graph */
         if (!graph->adjlist) {
             graph->adjlist = adjlist;
+            graph->num_of_vertices++;
             return;
         }
 

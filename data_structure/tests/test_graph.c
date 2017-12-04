@@ -42,11 +42,18 @@ TEST(test_destory)
     return NULL;
 }
 
+TEST(test_graph_count)
+{
+    unit_assert(graph->num_of_vertices == 5, "graph count is not correct");
+    return NULL;
+}
+
 TEST(all_tests)
 {
     unit_suite_start();
     unit_run_test(test_create);
     unit_run_test(test_print_graph);
+    unit_run_test(test_graph_count);
     unit_run_test(test_destory);
     return NULL;
 }
