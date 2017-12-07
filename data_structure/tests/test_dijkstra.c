@@ -85,11 +85,7 @@ TEST(test_dijkstra)
     Graph* graph = Graph_create(int_compare);
 
     for (int i = 0; i < 7; ++i) {
-        int* source = malloc(sizeof(int));
-        *source = edge[i][0];
-        int* dest = malloc(sizeof(int));
-        *dest = edge[i][1];
-        Graph_add_edge(graph, source, dest, edge[i][2]);
+        Graph_add_edge(graph, &edge[i][0], &edge[i][1], edge[i][2]);
     }
 
     printf("Print graph:\n");
