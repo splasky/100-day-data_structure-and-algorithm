@@ -48,6 +48,12 @@ TEST(test_graph_count)
     return NULL;
 }
 
+TEST(test_num_of_members)
+{
+    unit_assert(graph->adjlist->num_of_members == 2, "num_of_members is not correct");
+    return NULL;
+}
+
 TEST(all_tests)
 {
     unit_suite_start();
