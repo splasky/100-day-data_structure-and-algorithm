@@ -70,6 +70,11 @@ void Graph_dijkstra(Graph* graph, const int src)
     }
 
     print_result(dist, graph->num_of_vertices + 1);
+
+    for (int i = 0; i < num_of_vertices + 1; i++) {
+        printf("%d\t", selected[i]);
+    }
+    printf("\n");
 }
 
 TEST(test_dijkstra)
