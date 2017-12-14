@@ -177,7 +177,6 @@ void* LinkedList_remove(LinkedList* list, ListNode* node)
     free(node);
     node = NULL;
 
-    return result;
 error:
     return result;
 }
