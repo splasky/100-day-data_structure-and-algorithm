@@ -26,7 +26,7 @@ static void count_predcessor(
     }
 }
 
-int topological_sort(Graph* graph, int num)
+int topological_sort(Graph* graph)
 {
     int immediate_predecessor[graph->num_of_vertices + 1];
     for (int i = 0; i < graph->num_of_vertices + 1; i++) {
@@ -85,7 +85,7 @@ TEST(test_aov_network)
     }
     Graph_print_graph(graph1, print_graph_cb);
 
-    if (topological_sort(graph1, 7)) {
+    if (topological_sort(graph1)) {
         printf("graph1 has cycle\n");
     } else {
         printf("graph1 doesn't has cycle\n");
@@ -97,7 +97,7 @@ TEST(test_aov_network)
     }
     Graph_print_graph(graph2, print_graph_cb);
 
-    if (topological_sort(graph2, 9)) {
+    if (topological_sort(graph2)) {
         printf("graph2 has cycle\n");
     } else {
         printf("graph2 doesn't has cycle\n");
