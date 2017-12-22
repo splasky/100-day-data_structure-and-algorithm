@@ -109,10 +109,84 @@ static void quick_sort_inline(int* array, int front, int end)
 
 static void quick_sort(int* array, int len) { quick_sort_inline(array, 0, len - 1); }
 
-/* static void heap_sort(int* array, int len);
-static void radix_sort(int* array, int len);
-static void merge_sort(int* array, int len);
- */
+static void max_heapify(int array[], int start, int end)
+{
+    int dad = start;
+    int son = (dad << 1) + 1;
+
+    while (son <= end) {
+        if (son + 1 <= end && array[son] < array[son + 1])
+            son++;
+        if (array[dad] > array[son]) {
+            return;
+        } else {
+            swap(&array[dad], &array[son]);
+            dad = son;
+            son = (dad << 1) + 1;
+        }
+    }
+}
+
+static void heap_sort(int array[], int len)
+{
+    /* change array to heap */
+    for (int i = len / 2 - 1; i >= 0; i--) {
+        max_heapify(array, i, len - 1);
+    }
+
+    /* change root with last leaf */
+    for (int i = len - 1; i > 0; i--) {
+        swap(&array[0], &array[i]);
+        max_heapify(array, 0, i - 1);
+    }
+}
+
+static void merge(int n1, const int a1[], int n2, const int a2[], int out[])
+{
+    int i1, i2, iout;
+    i1 = i2 = iout = 0;
+
+    while (i1 < n1 || i2 < n2) {
+        if (i2 >= n2 || ((i1 < n1) && (a1[i1] < a2[i2]))) {
+            /* a1[i1] exists and is smaller */
+            out[iout++] = a1[i1++];
+        } else {
+            out[iout++] = a2[i2++];
+        }
+    }
+}
+
+static void merge_sort_inline(int n, const int a[], int out[])
+{
+
+    int *a1, *a2;
+
+    if (n < 2) {
+        /* 0 or 1 elements is already sorted */
+        memcpy(out, a, sizeof(int) * n);
+    } else {
+        a1 = malloc(sizeof(int) * (n / 2));
+        a2 = malloc(sizeof(int) * (n - n / 2));
+
+        merge_sort_inline(n / 2, a, a1);
+        merge_sort_inline(n - n / 2, a + n / 2, a2);
+
+        /* merge results */
+        merge(n / 2, a1, n - n / 2, a2, out);
+
+        free(a1);
+        free(a2);
+    }
+}
+
+static void merge_sort(int* array, int len)
+{
+    int* out = calloc(len, sizeof(int));
+    merge_sort_inline(len, array, out);
+    printf("merge sort:\n");
+    print_array(out, len);
+    free(out);
+}
 
 TEST(sorting)
 {
@@ -121,11 +195,8 @@ TEST(sorting)
     TEST_SORT(select_sort);
     TEST_SORT(shell_sort);
     TEST_SORT(quick_sort);
-    /*
-    merge_sort(array, len);
-    heap_sort(array, len);
-    radix_sort(array, len);
-    */
+    TEST_SORT(heap_sort);
+    merge_sort(array, array_size);
     return NULL;
 }
 
