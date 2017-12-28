@@ -143,8 +143,7 @@ static void heap_sort(int array[], int len)
 
 static void merge(int n1, const int a1[], int n2, const int a2[], int out[])
 {
-    int i1, i2, iout;
-    i1 = i2 = iout = 0;
+    int i1 = 0, i2 = 0, iout = 0;
 
     while (i1 < n1 || i2 < n2) {
         if (i2 >= n2 || ((i1 < n1) && (a1[i1] < a2[i2]))) {
