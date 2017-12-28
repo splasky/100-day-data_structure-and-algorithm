@@ -1,4 +1,5 @@
 #include "../include/list.h"
+#include "../include/list_algos.h"
 #include "unit.h"
 #include <stdint.h>
 
@@ -125,6 +126,42 @@ TEST(test_add_all)
     return NULL;
 }
 
+static int int_comparator(const void* a, const void* b)
+{
+
+    if (*(int*)a == *(int*)b)
+        return 0;
+    else if (*(int*)a < *(int*)b)
+        return -1;
+    return 1;
+}
+
+TEST(test_merge_sort)
+{
+    /* int array[] = { 0, 2, 4, 6, 3, 1, 5, 7, 10, 11, 8, 9, 12, 15, 14, 13 }; */
+    int array[] = { 0, 2, 4, 6, 3, 1, 5, 7 };
+    int list_len = sizeof(array) / sizeof(array[0]);
+    LinkedList* list = New_LinkedList();
+
+    for (int i = 0; i < list_len; ++i) {
+        LinkedList_push(list, &array[i]);
+    }
+
+    list = LinkedList_merge_sort(list, int_comparator);
+
+    int i = 0;
+    LINKEDLIST_FOREACH(list, head, next, cur)
+    {
+        /* unit_assert(*(int*)cur->value == i, "Linkedlist mergesort test failed"); */
+        printf("%d\t", *(int*)cur->value);
+        ++i;
+    }
+    printf("\n");
+
+    LinkedList_destory(list);
+    return NULL;
+}
+
 TEST(all_tests)
 {
     unit_suite_start();
@@ -134,6 +171,7 @@ TEST(all_tests)
     unit_run_test(test_index);
     unit_run_test(test_clear_destory);
     unit_run_test(test_add_all);
+    unit_run_test(test_merge_sort);
     unit_run_test(test_destory);
 
     return NULL;
