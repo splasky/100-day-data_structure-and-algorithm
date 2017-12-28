@@ -287,15 +287,6 @@ LinkedList* LinkedList_deep_copy(LinkedList* list)
     return new_list;
 }
 
-int LinkedList_sorted(LinkedList* list, int (*comparator)(const void* a, const void* b))
-{
-    if (list == NULL) {
-        return 0;
-    }
-    qsort(list, list->count, sizeof(ListNode), comparator);
-    return 1;
-}
-
 void* LinkedList_find_value(LinkedList* list, void* key, LinkedList_Comparator comparator)
 {
     check(list, "List is NULL.");

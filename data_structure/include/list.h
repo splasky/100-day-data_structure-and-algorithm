@@ -46,17 +46,17 @@ void LinkedList_addALLWithIndex(LinkedList* list, const int index, LinkedList* l
 void* LinkedList_get(LinkedList* list, const int index);
 /* TODO:need test */
 typedef int (*LinkedList_Comparator)(const void* a, const void* b);
+
 int LinkedList_item_exists(
     LinkedList* list, void* value, LinkedList_Comparator comparator);
-int LinkedList_sorted(LinkedList* list, LinkedList_Comparator comparator);
 LinkedList* LinkedList_deep_copy(LinkedList* list);
-/* TODO:need implement and test*/
 void* LinkedList_find_value(
     LinkedList* list, void* key, LinkedList_Comparator comparator);
 ListNode* LinkedList_find_node(
     LinkedList* list, void* toFind, LinkedList_Comparator comparator);
 void LinkedList_remove_data(
     LinkedList* list, void* data, LinkedList_Comparator comparator);
+/* need test */
 
 void* LinkedList_Iterate(LinkedList_Iterator* iterator);
 void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* list);
