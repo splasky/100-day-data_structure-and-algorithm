@@ -353,6 +353,7 @@ void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* li
     iterator->index = 0;
     iterator->list = list;
     iterator->position = list->head;
+    return;
 
 error:
     log_err("InitializeIterator failed");
@@ -365,6 +366,7 @@ void LinkedList_ResetIterator(LinkedList_Iterator* iterator)
 
     iterator->index = 0;
     iterator->position = iterator->list->head;
+    return;
 
 error:
     log_err("Reset iterator failed");
