@@ -159,6 +159,7 @@ void splaytreeInsert(struct splaytree** root, int new_element)
 
     /* either way we stuff e in *root */
     *root = e;
+    return;
 error:
     log_err("malloc temp memory failed");
 }
