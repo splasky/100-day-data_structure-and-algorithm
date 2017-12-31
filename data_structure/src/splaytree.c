@@ -39,7 +39,7 @@ static inline void treeLink(
 {
     *hook[direction] = node;
     node->child[!direction] = 0;
-    hook[direction] = &node->child[!direction]; /* TODO:is this should be use before? */
+    hook[direction] = &node->child[!direction];
 }
 
 /* splay last element on path to target to root */
