@@ -204,6 +204,7 @@ size_t avltreeSize(const struct avltree* root)
 static void treePrintIndented(const struct avltree* root, int depth)
 {
     if (root) {
+        /* print left subtree */
         treePrintIndented(root->child[LEFT], depth + 1);
         for (int i = 0; i < INDENTATION_LEVEL * depth; ++i) {
             printf(" ");
@@ -211,6 +212,7 @@ static void treePrintIndented(const struct avltree* root, int depth)
         printf("%d Height: %d Size: %zu (%p)\n", root->key, root->height, root->size,
             (void*)root);
 
+        /* print right subtree */
         treePrintIndented(root->child[RIGHT], depth + 1);
     }
 }
