@@ -255,7 +255,7 @@ void avltreeSanityCheck(const struct avltree* root)
 
     if (root) {
         check(root->height == treeComputeHeight(root), "Height not correct");
-        check(root->size == treeComputeSize(root), "Size not correct");
+        check(root->size == (size_t)treeComputeSize(root), "Size not correct");
         check(
             abs(avltreeHeight(root->child[LEFT]) - avltreeHeight(root->child[RIGHT]) < 2),
             "Not balance");

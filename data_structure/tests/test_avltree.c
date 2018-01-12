@@ -19,7 +19,7 @@ TEST(test_avltree)
 
     /* check ranks */
     for (int i = 0; i < n; ++i) {
-        unit_assert(avltreeRank(root, i) == i, "Test rank failed");
+        unit_assert(avltreeRank(root, i) == (size_t)i, "Test rank failed");
         unit_assert(avltreeUnrank(root, i) == i, "Test unrank failed");
     }
 
