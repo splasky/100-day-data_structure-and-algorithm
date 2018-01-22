@@ -1,5 +1,6 @@
 #include "../include/darray.h"
 #include "../include/dbg.h"
+#include <stdlib.h>
 
 Darray* Darray_create(size_t element_size, size_t initial_max)
 {
@@ -35,7 +36,7 @@ void Darray_destroy(Darray* darray)
 void Darray_clear(Darray* darray)
 {
     if (darray->element_size > 0) {
-        for (int i = 0; i < darray->max; ++i) {
+        for (int i = 0; i < Darray_max(darray); ++i) {
             if (darray->contents[i]) {
                 free(darray->contents[i]);
             }
@@ -151,4 +152,10 @@ void* Darray_new(Darray* darray)
     return calloc(1, darray->element_size);
 error:
     return NULL;
+}
+
+int Darray_qsort(Darray* darray, Darray_compare cmp)
+{
+    qsort(darray->contents, Darray_count(darray), sizeof(void*), cmp);
+    return 0;
 }

@@ -25,6 +25,11 @@ void* Darray_get(Darray* darray, int index);
 void* Darray_remove(Darray* darray, int index);
 void* Darray_new(Darray* darray);
 
+typedef int (*Darray_compare)(const void* a, const void* b);
+typedef void (*Darray_traverse_cb)(void* value);
+int Darray_qsort(Darray* darray, Darray_compare cmp);
+void Darray_traverse(Darray* darray, Darray_traverse_cb traverse);
+
 #define Darray_last(A) ((A)->contains[(A)->end - 1])
 #define Darray_first(A) ((A)->contains[0])
 #define Darray_count(A) ((A)->end)

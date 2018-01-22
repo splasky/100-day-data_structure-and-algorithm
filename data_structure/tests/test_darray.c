@@ -1,6 +1,31 @@
 #include "../include/darray.h"
 #include "../include/dbg.h"
 #include "unit.h"
+#include <stdint.h>
+
+static void swap(void** a, void** b)
+{
+    void* tmp = a;
+    a = b;
+    b = tmp;
+}
+
+static void shuffle(Darray* darray)
+{
+    for (int i = Darray_count(darray); i > 0; --i) {
+        int r = rand() % i;
+        swap(darray->contents[i], darray->contents[r]);
+    }
+}
+
+static int int_compare(int** a, int** b) { return (**a > **b) - (**a < **b); }
+
+void Darray_traverse(Darray* darray, void (*func)(void* value))
+{
+    for (int i = 0; i < Darray_count(darray); ++i) {
+        func(Darray_get(darray, i));
+    }
+}
 
 TEST(test_darray)
 {
@@ -44,7 +69,7 @@ TEST(test_darray)
 
     for (int i = 0; i < 1000; ++i) {
         int* val = Darray_new(darray);
-        *val = i * 1234;
+        *val = i;
         Darray_push(darray, val);
     }
     unit_assert(darray->max == 1201, "Wrong max size");
@@ -52,10 +77,28 @@ TEST(test_darray)
     for (int i = 999; i >= 0; i--) {
         int* val = Darray_pop(darray);
         unit_assert(val != NULL, "Shouldn't get a NULL");
-        unit_assert(*val == i * 1234, "Wrong value.");
+        unit_assert(*val == i, "Wrong value.");
         free(val);
     }
 
+    Darray_destroy(darray);
+
+    darray = Darray_create(sizeof(int), 100);
+
+    for (int i = 0; i < 1000; ++i) {
+        int* val = Darray_new(darray);
+        *val = i;
+        Darray_push(darray, val);
+    }
+
+    shuffle(darray);
+    Darray_qsort(darray, (Darray_compare)int_compare);
+
+    for (int i = 0; i < Darray_count(darray); ++i) {
+        unit_assert(*(int*)Darray_get(darray, i) == i, "Darray_qsort failed");
+    }
+
+    /* TODO:Fix memory leak */
     Darray_destroy(darray);
     return NULL;
 }
