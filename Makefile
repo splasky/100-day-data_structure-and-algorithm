@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS = -O2 -Wall -Wextra -Isrc/ -rdynamic
+CFLAGS = -O3 -Wall -Wextra -Isrc/ -rdynamic
 DCFLAGS =
 LDFLAGS = -ldl $(OPTLIBS)
 PREFIX ?= /usr/local/
