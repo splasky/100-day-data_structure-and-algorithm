@@ -34,7 +34,6 @@ install: all
 
 build:
 	@mkdir -p build
-	@mkdir -p bin
 
 # The Unit Tests
 .PHONY: tests
