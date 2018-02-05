@@ -14,7 +14,7 @@ int Node_find_key(Node* self, int key)
     return idx;
 }
 
-Node* New_Node(const int t, const _Bool leaf)
+Node* New_Node(const int t, const bool leaf)
 {
     Node* node = malloc(sizeof(Node));
     if (node == NULL) {
@@ -290,7 +290,7 @@ static void BTree_erease_real(Btree* self, Node* node, int key)
             return;
         }
 
-        _Bool flag = (index == node->n) ? true : false;
+        bool flag = (index == node->n) ? true : false;
 
         if (node->children[index]->n == self->minial_degree - 1) {
             /* if left child's keys more than minial_degree-1 */

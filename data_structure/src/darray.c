@@ -6,7 +6,7 @@ Darray* Darray_create(size_t element_size, size_t initial_max)
 {
     Darray* darray = malloc(sizeof(Darray));
     check_mem(darray);
-    check(initial_max > 0, "You must set an initial_max >0");
+    check(initial_max > 0, "You must set an initial_max>0");
     darray->max = initial_max;
 
     darray->contents = calloc(initial_max, sizeof(void*));

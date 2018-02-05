@@ -31,7 +31,7 @@ typedef struct Graph_t {
 Graph* Graph_create(Graph_compare compare);
 void Graph_add_edge(Graph* graph, void* source, void* dest, int weight);
 void Graph_destory(Graph* graph);
-_Bool Graph_has_edge(Graph* graph, void* source, void* dest);
+bool Graph_has_edge(Graph* graph, void* source, void* dest);
 void Graph_add_vertex_not_exists(Graph* graph, void* source);
 
 typedef void (*Graph_print_cb)(const void* value);

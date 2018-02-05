@@ -10,9 +10,9 @@
 
 typedef struct Node Node;
 struct Node {
-    _Bool leaf; /* Is true when node is leaf */
-    int n;      /* number of keys */
-    int* keys;  /* keys */
+    bool leaf; /* Is true when node is leaf */
+    int n;     /* number of keys */
+    int* keys; /* keys */
     int minial_degree;
     Node** children;
     void (*traverse)(Node* self);
@@ -20,7 +20,7 @@ struct Node {
     int (*find_key)(Node* self, int k);
 };
 
-Node* New_Node(const int t, const _Bool leaf);
+Node* New_Node(const int t, const bool leaf);
 void Node_traverse(Node* self);
 Node* Node_search(Node* self, int k);
 int Node_find_key(Node* self, int key);

@@ -10,7 +10,7 @@ uint32_t Hashmap_fnv1a_hash(void* data)
     const char* s = (char*)data;
     uint32_t hash = FNV_OFFSET_BASIS;
     const size_t str_len = strlen(s);
-    for (int i = 0; i < str_len; ++i) {
+    for (size_t i = 0; i < str_len; ++i) {
         hash ^= *s;
         hash *= FNV_PRIME;
     }

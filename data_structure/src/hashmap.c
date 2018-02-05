@@ -82,7 +82,7 @@ error:
 }
 
 static inline Darray* Hashmap_find_bucket(
-    Hashmap* map, void* key, _Bool create, uint32_t* hash_out)
+    Hashmap* map, void* key, bool create, uint32_t* hash_out)
 {
     uint32_t hash = map->hash(key);
     int bucket_n = hash % DEFAULT_NUMBER_OF_BUCKETS;

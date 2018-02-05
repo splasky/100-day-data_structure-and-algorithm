@@ -30,7 +30,7 @@ error:
     return NULL;
 }
 
-static inline _Bool Graph_is_vertex_in_graph(Graph* graph, void* key)
+static inline bool Graph_is_vertex_in_graph(Graph* graph, void* key)
 {
     check(graph, "graph is empty");
     AdjList* curr = graph->adjlist;
@@ -86,7 +86,7 @@ static int int_compare(const void* a, const void* b)
     return (x > y) - (y > x);
 }
 
-static inline _Bool AdjList_is_node_in_list(Graph* graph, AdjList* adjlist, void* dest)
+static inline bool AdjList_is_node_in_list(Graph* graph, AdjList* adjlist, void* dest)
 {
     check(adjlist, "adjlist is empty");
     if (!adjlist->head) {
@@ -248,7 +248,7 @@ finally:
     graph = NULL;
 }
 
-_Bool Graph_has_edge(Graph* graph, void* source, void* dest)
+bool Graph_has_edge(Graph* graph, void* source, void* dest)
 {
     AdjList* curr = graph->adjlist;
     if (!curr) {

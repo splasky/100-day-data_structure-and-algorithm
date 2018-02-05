@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index);
+static inline bool LinkedList_is_Over_Bound(LinkedList* list, const int index);
 static inline ListNode* LinkedList_getNodeFromIndex(LinkedList* list, const int index);
 static inline int ListNode_item_exists(
     ListNode* node, void* value, LinkedList_Comparator comparator);
@@ -28,7 +28,7 @@ error:
     return NULL;
 }
 
-static inline _Bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
+static inline bool LinkedList_is_Over_Bound(LinkedList* list, const int index)
 {
     if (index > LinkedList_count(list) || LinkedList_count(list) < 0) {
         log_err(
