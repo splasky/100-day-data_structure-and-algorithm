@@ -2,45 +2,42 @@
 #include "../include/dbg.h"
 #include <stdio.h>
 
-static int treeComputeHeight(const struct avltree* root)
+static int treeComputeHeight(const AVLTreeNode* root)
 {
-    int childHeight;
-    int maxChildHeight;
 
     if (root == 0) {
         return TREE_EMPTY_HEIGHT;
-    } else {
-        maxChildHeight = TREE_EMPTY_HEIGHT;
-
-        for (int i = 0; i < TREE_NUM_CHILDREN; ++i) {
-            childHeight = avltreeHeight(root->child[i]);
-            if (childHeight > maxChildHeight) {
-                maxChildHeight = childHeight;
-            }
-        }
-
-        return maxChildHeight + 1;
     }
+    int maxChildHeight;
+    maxChildHeight = TREE_EMPTY_HEIGHT;
+
+    for (int i = 0; i < TREE_NUM_CHILDREN; ++i) {
+        int childHeight = avltreeHeight(root->child[i]);
+        if (childHeight > maxChildHeight) {
+            maxChildHeight = childHeight;
+        }
+    }
+
+    return maxChildHeight + 1;
 }
 
-static int treeComputeSize(const struct avltree* root)
+static int treeComputeSize(const AVLTreeNode* root)
 {
     int size;
 
     if (root == 0) {
         return 0;
-    } else {
-        size = 1;
-
-        for (int i = 0; i < TREE_NUM_CHILDREN; ++i) {
-            size += avltreeSize(root->child[i]);
-        }
-
-        return size;
     }
+    size = 1;
+
+    for (int i = 0; i < TREE_NUM_CHILDREN; ++i) {
+        size += avltreeSize(root->child[i]);
+    }
+
+    return size;
 }
 
-static void treeAggregateFix(struct avltree* root)
+static void treeAggregateFix(AVLTreeNode* root)
 {
     if (root) {
         root->height = treeComputeHeight(root);
@@ -48,11 +45,11 @@ static void treeAggregateFix(struct avltree* root)
     }
 }
 
-static void treeRotate(struct avltree** root, int direction)
+static void treeRotate(AVLTreeNode** root, int direction)
 {
-    struct avltree* x;
-    struct avltree* y;
-    struct avltree* b;
+    AVLTreeNode* x;
+    AVLTreeNode* y;
+    AVLTreeNode* b;
 
     y = *root;
     x = y->child[direction];
@@ -66,7 +63,7 @@ static void treeRotate(struct avltree** root, int direction)
     treeAggregateFix(x);
 }
 
-static void treeRebalance(struct avltree** root)
+static void treeRebalance(AVLTreeNode** root)
 {
     if (*root) {
         for (int direction = 0; direction < TREE_NUM_CHILDREN; ++direction) {
@@ -86,12 +83,24 @@ static void treeRebalance(struct avltree** root)
                 <= 1,
             "tree is not balance");
     }
-
 error:
     return;
 }
 
-void avltreeDestroy(struct avltree** root)
+static inline AVLTreeNode* Create_AVLTreeNode(
+    void* key, void* data, AVLTree_compare compare)
+{
+    AVLTreeNode* node = malloc(sizeof(AVLTreeNode));
+    node->compare = compare;
+    node->data = data;
+    node->key = key;
+    node->height = 0;
+    node->size = 1;
+    node->child[LEFT] = node->child[RIGHT] = 0;
+    return node;
+}
+
+void avltreeDestroy(AVLTreeNode** root)
 {
     if (*root) {
         for (int i = 0; i < TREE_NUM_CHILDREN; ++i) {
@@ -102,23 +111,19 @@ void avltreeDestroy(struct avltree** root)
     }
 }
 
-void avltreeInsert(struct avltree** root, int new_element)
+void avltreeInsert(AVLTreeNode** root, void* key, void* data, AVLTree_compare compare)
 {
 
-    struct avltree* e;
-    if (*root == 0) {
-        e = malloc(sizeof(*e));
+    if (*root == 0 || *root == NULL) {
+        AVLTreeNode* e = Create_AVLTreeNode(key, data, compare);
         check_mem(e);
-
-        e->key = new_element;
-        e->child[LEFT] = e->child[RIGHT] = 0;
-
         *root = e;
-    } else if ((*root)->key == new_element) {
+    } else if ((*root)->compare((*root)->key, key) == 0) {
         /* element exists,do nothing */
         return;
     } else {
-        avltreeInsert(&(*root)->child[(*root)->key < new_element], new_element);
+        avltreeInsert(
+            &(*root)->child[(*root)->compare((*root)->key, key) < 0], key, data, compare);
     }
 
     treeAggregateFix(*root);
@@ -127,26 +132,43 @@ error:
     return;
 }
 
-int avltreeContains(const struct avltree* root, int target)
+bool avltreeContains(const AVLTreeNode* root, const void* key)
 {
-    while (root && root->key != target) {
-        root = root->child[root->key < target];
+    if (!root)
+        return NULL;
+    while (root != 0) {
+        if (root->compare(root->key, key) == 0) {
+            return true;
+        }
+        root = root->child[root->compare(root->key, key) < 0];
     }
-
-    return root != 0;
+    return false;
 }
 
-int avltreeDeleteMin(struct avltree** root)
+void* avltreeFind(const AVLTreeNode* root, const void* key)
 {
-    struct avltree* toFree;
-    int retval;
+    check(root, "root is empty");
+    while (root != 0) {
+        if (root->compare(root->key, key) == 0) {
+            return root->data;
+        }
+        root = root->child[root->compare(root->key, key) < 0];
+    }
+error:
+    return NULL;
+}
+
+void* avltreeDeleteMin(AVLTreeNode** root)
+{
+    AVLTreeNode* toFree;
+    void* retval;
     check(*root, "root is empty");
 
     if ((*root)->child[LEFT]) {
         retval = avltreeDeleteMin(&(*root)->child[LEFT]);
     } else {
         toFree = *root;
-        retval = toFree->key;
+        retval = toFree->data;
         *root = toFree->child[RIGHT];
         free(toFree);
     }
@@ -159,12 +181,12 @@ error:
     return 0;
 }
 
-void avltreeDelete(struct avltree** root, int target)
+void avltreeDelete(AVLTreeNode** root, void* target)
 {
-    struct avltree* toFree;
+    AVLTreeNode* toFree;
 
     if (*root) {
-        if ((*root)->key == target) {
+        if ((*root)->compare((*root)->key, target) == 0) {
             if ((*root)->child[RIGHT]) {
                 (*root)->key = avltreeDeleteMin(&(*root)->child[RIGHT]);
             } else {
@@ -173,7 +195,8 @@ void avltreeDelete(struct avltree** root, int target)
                 free(toFree);
             }
         } else {
-            avltreeDelete(&(*root)->child[(*root)->key < target], target);
+            avltreeDelete(
+                &(*root)->child[(*root)->compare((*root)->key, target) < 1], target);
         }
 
         treeAggregateFix(*root);
@@ -181,7 +204,7 @@ void avltreeDelete(struct avltree** root, int target)
     }
 }
 
-int avltreeHeight(const struct avltree* root)
+int avltreeHeight(const AVLTreeNode* root)
 {
     if (root == 0) {
         return TREE_EMPTY_HEIGHT;
@@ -190,7 +213,7 @@ int avltreeHeight(const struct avltree* root)
     }
 }
 
-size_t avltreeSize(const struct avltree* root)
+size_t avltreeSize(const AVLTreeNode* root)
 {
     if (root == 0) {
         return 0;
@@ -201,63 +224,33 @@ size_t avltreeSize(const struct avltree* root)
 
 #define INDENTATION_LEVEL (2)
 
-static void treePrintIndented(const struct avltree* root, int depth)
+static void treePrintIndented(const AVLTreeNode* root, int depth, AVLTree_print print)
 {
     if (root) {
         /* print left subtree */
-        treePrintIndented(root->child[LEFT], depth + 1);
+        treePrintIndented(root->child[LEFT], depth + 1, print);
         for (int i = 0; i < INDENTATION_LEVEL * depth; ++i) {
             printf(" ");
         }
-        printf("%d Height: %d Size: %zu (%p)\n", root->key, root->height, root->size,
-            (void*)root);
-
+        print(root);
         /* print right subtree */
-        treePrintIndented(root->child[RIGHT], depth + 1);
+        treePrintIndented(root->child[RIGHT], depth + 1, print);
     }
 }
 
-void avltreePrint(const struct avltree* root) { treePrintIndented(root, 0); }
-
-size_t avltreeRank(const struct avltree* root, int target)
+void avltreePrint(const AVLTreeNode* root, AVLTree_print print)
 {
-    size_t rank = 0;
-
-    while (root && root->key != target) {
-        if (root->key < target) {
-            rank += (1 + avltreeSize(root->child[LEFT]));
-            root = root->child[RIGHT];
-        } else {
-            root = root->child[LEFT];
-        }
-    }
-
-    return rank + avltreeSize(root->child[LEFT]);
+    treePrintIndented(root, 0, print);
 }
 
-int avltreeUnrank(const struct avltree* root, size_t rank)
-{
-    size_t leftSize;
-    while (rank != (leftSize = avltreeSize(root->child[LEFT]))) {
-        if (rank < leftSize) {
-            root = root->child[LEFT];
-        } else {
-            root = root->child[RIGHT];
-            rank -= (leftSize + 1);
-        }
-    }
-
-    return root->key;
-}
-
-void avltreeSanityCheck(const struct avltree* root)
+void avltreeSanityCheck(const AVLTreeNode* root)
 {
 
     if (root) {
         check(root->height == treeComputeHeight(root), "Height not correct");
         check(root->size == (size_t)treeComputeSize(root), "Size not correct");
         check(
-            abs(avltreeHeight(root->child[LEFT]) - avltreeHeight(root->child[RIGHT]) < 2),
+            abs(avltreeHeight(root->child[LEFT]) - avltreeHeight(root->child[RIGHT])) < 2,
             "Not balance");
 
         for (int i = 0; i < TREE_NUM_CHILDREN; ++i) {
