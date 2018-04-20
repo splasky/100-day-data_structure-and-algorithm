@@ -5,7 +5,7 @@
 static int treeComputeHeight(const AVLTreeNode* root)
 {
 
-    if (root == 0) {
+    if (root == TREE_EMPTY) {
         return TREE_EMPTY_HEIGHT;
     }
     int maxChildHeight;
@@ -25,7 +25,7 @@ static int treeComputeSize(const AVLTreeNode* root)
 {
     int size;
 
-    if (root == 0) {
+    if (root == TREE_EMPTY) {
         return 0;
     }
     size = 1;
@@ -96,7 +96,7 @@ static inline AVLTreeNode* Create_AVLTreeNode(
     node->key = key;
     node->height = 0;
     node->size = 1;
-    node->child[LEFT] = node->child[RIGHT] = 0;
+    node->child[LEFT] = node->child[RIGHT] = TREE_EMPTY;
     return node;
 }
 
@@ -114,7 +114,7 @@ void avltreeDestroy(AVLTreeNode** root)
 void avltreeInsert(AVLTreeNode** root, void* key, void* data, AVLTree_compare compare)
 {
 
-    if (*root == 0 || *root == NULL) {
+    if (*root == TREE_EMPTY) {
         AVLTreeNode* e = Create_AVLTreeNode(key, data, compare);
         check_mem(e);
         *root = e;
@@ -136,7 +136,7 @@ bool avltreeContains(const AVLTreeNode* root, const void* key)
 {
     if (!root)
         return NULL;
-    while (root != 0) {
+    while (root != TREE_EMPTY) {
         if (root->compare(root->key, key) == 0) {
             return true;
         }
@@ -148,7 +148,7 @@ bool avltreeContains(const AVLTreeNode* root, const void* key)
 void* avltreeFind(const AVLTreeNode* root, const void* key)
 {
     check(root, "root is empty");
-    while (root != 0) {
+    while (root != TREE_EMPTY) {
         if (root->compare(root->key, key) == 0) {
             return root->data;
         }
@@ -206,7 +206,7 @@ void avltreeDelete(AVLTreeNode** root, void* target)
 
 int avltreeHeight(const AVLTreeNode* root)
 {
-    if (root == 0) {
+    if (root == TREE_EMPTY) {
         return TREE_EMPTY_HEIGHT;
     } else {
         return root->height;
@@ -215,7 +215,7 @@ int avltreeHeight(const AVLTreeNode* root)
 
 size_t avltreeSize(const AVLTreeNode* root)
 {
-    if (root == 0) {
+    if (root == TREE_EMPTY) {
         return 0;
     } else {
         return root->size;
