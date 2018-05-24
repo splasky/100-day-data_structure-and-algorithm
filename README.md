@@ -6,3 +6,8 @@ just clone and
 make
 ```
 enjoy!
+# Test on
+```
+gcc 7.3.0
+ubuntu 17.10
+```
