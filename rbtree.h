@@ -2,6 +2,8 @@
 #define RBTREE_H_SGKRD6D2
 
 #include <stdbool.h>
+#define RED true
+#define BLACK false
 
 typedef struct RbNode
 {
@@ -24,10 +26,11 @@ typedef struct RbTree
 RbNode* New_RbNode(void* id, void* data);
 /* rbtree insert */
 void RbNode_insert(RbNode* root, void* id, void* data, RbTree_compare);
+void RbNode_free(RbNode* node);
 
 RbTree* New_RbTree(RbTree_compare compare);
 void RbTree_insert(RbTree* rbtree, void* id, void* data);
-void RbTree_delete(RbTree* rbtree, void* id);
+bool RbTree_delete(RbTree* rbtree, void* id);
 void RbTree_update(RbTree* rbtree, void* id, void* data);
 void* RbTree_get(RbTree* rbtree, void* id);
 void RbTree_destroy(RbTree* rbtree);

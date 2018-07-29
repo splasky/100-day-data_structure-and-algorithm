@@ -6,6 +6,13 @@ static void balanceAfterInsert(RbNode* root, RbNode* newNode);
 static bool uNodeIsBlackOrNull(RbNode* uNode);
 static void leftRotate(RbNode** root, RbNode* pivot);
 static void rightRotate(RbNode** root, RbNode* pivot);
+static RbNode* successor(RbNode* node);
+static void fixAfterDelection(RbTree* rbtree, RbNode* node);
+static bool colorOf(RbNode* p);
+static RbNode* parentOf(RbNode* p);
+static void setColor(RbNode* p, bool color);
+static RbNode* leftOf(RbNode* p);
+static RbNode* rightOf(RbNode* p);
 
 RbTree* New_RbTree(RbTree_compare compare)
 {
@@ -21,9 +28,89 @@ void RbTree_insert(RbTree* rbtree, void* id, void* data)
     RbNode_insert(rbtree->root, id, data, rbtree->compare);
 }
 
-void RbTree_delete(RbTree* rbtree, void* id)
+void RbNode_free(RbNode* node)
 {
+    /* You must check the node has no left child
+     * and right child
+     */
 
+    if (node->parent->left == node)
+    {
+        node->parent->left = NULL;
+    }
+    else
+    {
+        node->parent->right = NULL;
+    }
+    free(node->data);
+    free(node->id);
+    free(node);
+}
+
+bool RbTree_delete(RbTree* rbtree, void* id)
+{
+    RbNode* node = RbTree_getNode(rbtree, id);
+    if (node == NULL)
+    {
+        return false;
+    }
+
+    /* If node have two child, find the succesor */
+    if (node->left != NULL && node->right != NULL)
+    {
+        RbNode* s = successor(node);
+        node->data = s->data;
+        node->id = s->id;
+        node = s;
+    }
+
+    RbNode* replacement = (node->left != NULL ? node->left : node->right);
+    if (replacement != NULL)
+    {
+        replacement->parent = node->parent;
+        if (node->parent == NULL)
+        {
+            rbtree->root = replacement;
+        }
+        else if (node == node->parent->left)
+        {
+            node->parent->left = replacement;
+        }
+        else
+        {
+            node->parent->right = replacement;
+        }
+        node->left = node->right = node->parent = NULL;
+        if (node->red == BLACK)
+        {
+            fixAfterDelection(rbtree, replacement);
+        }
+    }
+    else if (node->parent == NULL)
+    {
+        rbtree->root = NULL;
+    }
+    else
+    {
+        /* no child */
+        if (node->red == BLACK)
+        {
+            fixAfterDelection(rbtree, node);
+        }
+        if (node->parent != NULL)
+        {
+            if (node == node->parent->left)
+            {
+                node->parent->left = NULL;
+            }
+            else
+            {
+                node->parent->right = NULL;
+            }
+            node->parent = NULL;
+        }
+    }
+    return true;
 }
 
 void RbTree_update(RbTree* rbtree, void* id, void* data)
@@ -317,4 +404,138 @@ static void rightRotate(RbNode** root, RbNode* pivot)
     {
         rightOfOldLeft->parent = pivot;
     }
+}
+static RbNode* successor(RbNode* node)
+{
+    if (node == NULL)
+    {
+        return NULL;
+    }
+
+    if (node->right != NULL)
+    {
+        RbNode* p = node->right;
+        while (p->left != NULL)
+        {
+            p = p->left;
+        }
+        return p;
+    }
+    else
+    {
+        RbNode* p = node->parent;
+        RbNode* ch = node;
+        while (p != NULL && ch == p->right)
+        {
+            ch = p;
+            p = p->parent;
+        }
+        return p;
+    }
+}
+
+static void fixAfterDelection(RbTree* rbtree, RbNode* node)
+{
+    RbNode* root = rbtree->root;
+    while (node != root && colorOf(node) == BLACK)
+    {
+        if (node == leftOf(parentOf(node)))
+        {
+
+            RbNode* sib = rightOf(parentOf(node));
+
+            if (colorOf(sib) == RED)
+            {
+                setColor(sib, BLACK);
+                setColor(parentOf(node), RED);
+                leftRotate(&root, parentOf(node));
+                sib = rightOf(parentOf(node));
+            }
+
+            if (colorOf(leftOf(sib)) == BLACK &&
+                    colorOf(rightOf(sib)) == BLACK)
+            {
+                setColor(sib, RED);
+                node = parentOf(node);
+            }
+            else
+            {
+                if (colorOf(rightOf(sib)) == BLACK)
+                {
+                    setColor(leftOf(sib), BLACK);
+                    setColor(sib, RED);
+                    rightRotate(&root, sib);
+                    sib = rightOf(parentOf(node));
+                }
+                setColor(sib, colorOf(parentOf(node)));
+                setColor(parentOf(node), BLACK);
+                setColor(rightOf(sib), BLACK);
+                leftRotate(&root, parentOf(node));
+                node = root;
+            }// symmetric
+        }
+        else
+        {
+            RbNode* sib = leftOf(parentOf(node));
+            if (colorOf(sib) == RED)
+            {
+                setColor(sib, BLACK);
+                setColor(parentOf(node), RED);
+                rightRotate(&root, parentOf(node));
+                sib = leftOf(parentOf(node));
+            }
+            if (colorOf(rightOf(sib)) == BLACK &&
+                    colorOf(leftOf(sib)) == BLACK)
+            {
+                setColor(sib, RED);
+                node = parentOf(node);
+            }
+            else
+            {
+                if (colorOf(leftOf(sib)) == BLACK)
+                {
+                    setColor(rightOf(sib), BLACK);
+                    setColor(sib, RED);
+                    leftRotate(&root, sib);
+                    sib = leftOf(parentOf(node));
+                }
+                setColor(sib, colorOf(parentOf(node)));
+                setColor(parentOf(node), BLACK);
+                setColor(leftOf(node), BLACK);
+                rightRotate(&root, parentOf(node));
+                node = root;
+
+            }
+        }
+    }
+
+    setColor(node, BLACK);
+}
+
+static bool colorOf(RbNode* p)
+{
+    return (p == NULL ? BLACK : p->red);
+}
+
+static RbNode* parentOf(RbNode* p)
+{
+    return (p == NULL ? NULL : p->parent);
+}
+
+static void setColor(RbNode* p, bool color)
+{
+    if (p != NULL)
+    {
+        p->red = color;
+    }
+}
+
+static RbNode* leftOf(RbNode* p)
+{
+    return (p == NULL ? NULL : p->left);
+}
+
+static RbNode* rightOf(RbNode* p)
+{
+    return (p == NULL ? NULL : p->right);
 }
