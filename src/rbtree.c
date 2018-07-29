@@ -1,6 +1,6 @@
-#include "rbtree.h"
+#include "../include/rbtree.h"
 #include <stdlib.h>
-#include "include/dbg.h"
+#include "../include/dbg.h"
 
 static void balanceAfterInsert(RbNode* root, RbNode* newNode);
 static bool uNodeIsBlackOrNull(RbNode* uNode);
