@@ -2,17 +2,16 @@
 #include <stdlib.h>
 #include "../include/dbg.h"
 
-static void balanceAfterInsert(RbNode* root, RbNode* newNode);
-static bool uNodeIsBlackOrNull(RbNode* uNode);
+static void balanceAfterInsert(RbNode** root, RbNode* newNode);
 static void leftRotate(RbNode** root, RbNode* pivot);
 static void rightRotate(RbNode** root, RbNode* pivot);
-static RbNode* successor(RbNode* node);
-static void fixAfterDelection(RbTree* rbtree, RbNode* node);
-static bool colorOf(RbNode* p);
+static int colorOf(RbNode* p);
 static RbNode* parentOf(RbNode* p);
-static void setColor(RbNode* p, bool color);
+static void setColor(RbNode* p, int color);
 static RbNode* leftOf(RbNode* p);
 static RbNode* rightOf(RbNode* p);
+static void treePrintIndented(const RbNode* root, int depth, RbTree_print print);
+static void fixDeleteRBTree(RbTree* rbtree, RbNode *node);
 
 RbTree* New_RbTree(RbTree_compare compare)
 {
@@ -25,7 +24,7 @@ RbTree* New_RbTree(RbTree_compare compare)
 
 void RbTree_insert(RbTree* rbtree, void* id, void* data)
 {
-    RbNode_insert(rbtree->root, id, data, rbtree->compare);
+    RbNode_insert(&rbtree->root, id, data, rbtree->compare);
 }
 
 void RbNode_free(RbNode* node)
@@ -33,83 +32,205 @@ void RbNode_free(RbNode* node)
     /* You must check the node has no left child
      * and right child
      */
+    if (!node)
+    {
+        return;
+    }
 
-    if (node->parent->left == node)
+    if (node->parent)
     {
-        node->parent->left = NULL;
+        if (node->parent->left == node)
+        {
+            node->parent->left = NULL;
+        }
+        if (node->parent->right == node)
+        {
+            node->parent->right = NULL;
+        }
+
     }
-    else
-    {
-        node->parent->right = NULL;
-    }
+
     free(node->data);
     free(node->id);
     free(node);
 }
 
-bool RbTree_delete(RbTree* rbtree, void* id)
+static void fixDeleteRBTree(RbTree* rbtree, RbNode *node)
 {
-    RbNode* node = RbTree_getNode(rbtree, id);
+    RbNode* root = rbtree->root;
     if (node == NULL)
-    {
-        return false;
-    }
+        return;
 
-    /* If node have two child, find the succesor */
-    if (node->left != NULL && node->right != NULL)
-    {
-        RbNode* s = successor(node);
-        node->data = s->data;
-        node->id = s->id;
-        node = s;
-    }
 
-    RbNode* replacement = (node->left != NULL ? node->left : node->right);
-    if (replacement != NULL)
+    if (colorOf(node) == RED || colorOf(node->left) == RED || colorOf(node->right) == RED)
     {
-        replacement->parent = node->parent;
-        if (node->parent == NULL)
+        RbNode *child = node->left != NULL ? node->left : node->right;
+
+        if (node == node->parent->left)
         {
-            rbtree->root = replacement;
-        }
-        else if (node == node->parent->left)
-        {
-            node->parent->left = replacement;
+            node->parent->left = child;
+            if (child != NULL)
+                child->parent = node->parent;
+            setColor(child, BLACK);
+            RbNode_free (node);
         }
         else
         {
-            node->parent->right = replacement;
+            node->parent->right = child;
+            if (child != NULL)
+                child->parent = node->parent;
+            setColor(child, BLACK);
+            RbNode_free (node);
         }
-        node->left = node->right = node->parent = NULL;
-        if (node->red == BLACK)
-        {
-            fixAfterDelection(rbtree, replacement);
-        }
-    }
-    else if (node->parent == NULL)
-    {
-        rbtree->root = NULL;
     }
     else
     {
-        /* no child */
-        if (node->red == BLACK)
+        RbNode *sibling = NULL;
+        RbNode *parent = NULL;
+        RbNode *ptr = node;
+        setColor(ptr, DOUBLE_BLACK);
+        while (ptr != root && colorOf(ptr) == DOUBLE_BLACK)
         {
-            fixAfterDelection(rbtree, node);
-        }
-        if (node->parent != NULL)
-        {
-            if (node == node->parent->left)
+            parent = parentOf(ptr);
+            if (ptr == leftOf(parent))
             {
-                node->parent->left = NULL;
+                sibling = rightOf(parent);
+                if (colorOf(sibling) == RED)
+                {
+                    setColor(sibling, BLACK);
+                    setColor(parent, RED);
+                    leftRotate(&root, parent);
+                }
+                else
+                {
+                    if (colorOf(leftOf(sibling)) == BLACK &&
+                            colorOf(rightOf(sibling)) == BLACK)
+                    {
+                        setColor(sibling, RED);
+                        if (colorOf(parent) == RED)
+                            setColor(parent, BLACK);
+                        else
+                            setColor(parent, DOUBLE_BLACK);
+                        ptr = parent;
+                    }
+                    else
+                    {
+                        if (colorOf(rightOf(sibling)) == BLACK)
+                        {
+                            setColor(leftOf(sibling), BLACK);
+                            setColor(sibling, RED);
+                            rightRotate(&root, sibling);
+                            sibling = rightOf(parent);
+                        }
+                        setColor(sibling, colorOf(parent));
+                        setColor(parent, BLACK);
+                        setColor(rightOf(sibling), BLACK);
+                        leftRotate(&root, parent);
+                        break;
+                    }
+                }
             }
             else
             {
-                node->parent->right = NULL;
+                sibling = leftOf(parent);
+                if (colorOf(sibling) == RED)
+                {
+                    setColor(sibling, BLACK);
+                    setColor(parent, RED);
+                    rightRotate(&root, parent);
+                }
+                else
+                {
+                    if (colorOf(leftOf(sibling)) == BLACK
+                            && colorOf(rightOf(sibling)) == BLACK)
+                    {
+                        setColor(sibling, RED);
+                        if (colorOf(parent) == RED)
+                            setColor(parent, BLACK);
+                        else
+                            setColor(parent, DOUBLE_BLACK);
+                        ptr = parent;
+                    }
+                    else
+                    {
+                        if (colorOf(leftOf(sibling)) == BLACK)
+                        {
+                            setColor(rightOf(sibling), BLACK);
+                            setColor(sibling, RED);
+                            leftRotate(&root, sibling);
+                            sibling = leftOf(parent);
+                        }
+                        setColor(sibling, colorOf(parent));
+                        setColor(parent, BLACK);
+                        setColor(leftOf(sibling), BLACK);
+                        rightRotate(&root, parent);
+                        break;
+                    }
+                }
             }
-            node->parent = NULL;
         }
+        RbNode_free (node);
+        setColor(root, BLACK);
+        rbtree->root = root;
     }
+}
+
+static RbNode* minValueNode(RbNode *node)
+{
+
+    RbNode *ptr = node;
+
+    while (ptr->left != NULL)
+        ptr = ptr->left;
+
+    return ptr;
+}
+
+static RbNode* deleteBST(RbNode* root, void* id, RbTree_compare compare)
+{
+    if (root == NULL)
+        return root;
+
+    if (compare(id, root->id) < 0)
+        return deleteBST(root->left, id, compare);
+
+
+    if (compare(id, root->id) > 0)
+        return deleteBST(root->right, id, compare);
+
+    if (root->left == NULL || root->right == NULL)
+        return root;
+
+    RbNode *temp = minValueNode(root->right);
+    root->data = temp->data;
+    root->id = temp->id;
+    return deleteBST(root->right, temp->id, compare);
+}
+
+bool RbTree_delete(RbTree* rbtree, void* id)
+{
+    RbNode* node = deleteBST(rbtree->root, id, rbtree->compare);
+    if (node == rbtree->root)
+    {
+        if (rightOf(node))
+        {
+            node->right->parent = NULL;
+            rbtree->root = node->right;
+        }
+        else if (leftOf(node))
+        {
+            node->right->parent = NULL;
+            rbtree->root = node->right;
+        }
+        else
+        {
+            rbtree->root = NULL;
+        }
+        RbNode_free(node);
+        return true;
+    }
+
+    fixDeleteRBTree(rbtree, node);
     return true;
 }
 
@@ -129,7 +250,7 @@ void* RbTree_getNode(RbTree* rbtree, void* id)
         {
             return root;
         }
-        root = rbtree->compare(root->id, id) < 0 ? root->left : root->right;
+        root = rbtree->compare(root->id, id) > 0 ? root->left : root->right;
     }
     return NULL;
 }
@@ -154,24 +275,26 @@ RbNode* New_RbNode(void* id, void* data)
     RbNode* node = malloc(sizeof(RbNode));
     node->id = id;
     node->data = data;
-    node->red = true;
+    node->color = RED;
     node->left = NULL;
     node->right = NULL;
     node->parent = NULL;
     return node;
 }
 
-void RbNode_insert(RbNode* root, void* id, void* data, RbTree_compare compare)
+void RbNode_insert(RbNode** root, void* id, void* data, RbTree_compare compare)
 {
     RbNode* newNode = New_RbNode(id, data);
 
-    if (root == NULL)
+    if (*root == NULL)
     {
-        root = newNode;
+        *root = newNode;
+        (*root)->color = BLACK;
+        return;
     }
     else
     {
-        RbNode* current = root;
+        RbNode* current = *root;
         RbNode* parent = NULL;
 
         while (true)
@@ -203,117 +326,92 @@ void RbNode_insert(RbNode* root, void* id, void* data, RbTree_compare compare)
     balanceAfterInsert(root, newNode);
 }
 
-static void balanceAfterInsert(RbNode* root, RbNode* current)
+void RbTree_printTree(RbTree* rbtree, RbTree_print print)
 {
-    /* Case 1: if no parent */
-    if (current->parent == NULL)
-    {
-        current->red = false;
-        root = current;
-    }
-    else
-    {
-        /* Case 2: if current parent is black */
-        if (!current->parent->red)
-        {
-            /* do nothing */
-        }
-        else if (current->parent->red)
-        {
-            /* gNode: grandfather */
-            RbNode* gNode = current->parent->parent;
-            RbNode* uNode = NULL;
-            if (gNode != NULL)
-            {
-                /* uNode: uncle */
-                uNode = (gNode->left == current->parent ? gNode->left : gNode->right);
-            }
-            /* Case 3: If node P and node U are all red, modify node G to red and modify
-             * both node and node U to black, then set the node G as current node and
-             * perform balanceAfterInsert operation on it.*/
-            if (uNode != NULL && uNode->red)
-            {
-                gNode->red = true;
-                uNode->red = false;
-                current->parent->red = false;
-                current = gNode;
-                balanceAfterInsert(root, current);
-            }
-            else if (uNodeIsBlackOrNull(uNode))
-            {
-                /*
-                * Case 4: If node P is red and node U is black, and the inserted node is the left
-                * of node P, and the node P is the left of node G, then modify the node P to black,
-                * and modify the node G to red. Finally, perform right rotate on node G and
-                * balanceAfterInsert
-                * on current node.
-                */
-                if (current == current->parent->left
-                        && (gNode != NULL && current->parent ==
-                            gNode->left))
-                {
-                    current->parent->red = false;
-                    gNode->red = true;
-                    rightRotate(&root, gNode);
-                    balanceAfterInsert(root, current);
-                }
-                /*
-                * Case 5: If node P is red and node U is black, and the inserted node is the right
-                * of node P, and the node P is the right of node G, then modify the node P to
-                * black, and modify the node G to red. Finally, perform left rotate on node G and
-                * balanceAfterInsert on current node.
-                */
 
-                else if ( current == current->parent->right
-                          && (gNode != NULL && current->parent ==
-                              gNode->right))
-                {
-                    current->parent->red = false;
-                    gNode->red = true;
-                    leftRotate(&root, gNode);
-                    balanceAfterInsert(root, current);
-                }
-                /*
-                * Case 6: If node P is red and node U is black, and the inserted node is the right
-                * of node P, and the node P is the left of node G, then let the node P be the new
-                * current node. Finally, perform left rotate on the current node and
-                * balanceAfterInsert on it
-                */
-                else if (current == current->parent->right
-                         && (gNode != NULL && current->parent ==
-                             gNode->left))
-                {
-                    RbNode* oldParent = current->parent;
-                    leftRotate(&root, oldParent);
-                    balanceAfterInsert(root, oldParent);
-                }
-                /*
-                * Case 7:If node P is red and node U is black, and the inserted node is the left of
-                * node P, and the node P is the right of node G, then let the node P be the new
-                * current node. Finally perform right rotate on the current node and
-                * balanceAfterInsert on it
-                */
-                else if (current == current->parent->left
-                         && (gNode != NULL && current->parent ==
-                             gNode->right))
-                {
-                    RbNode* oldParent = current->parent;
-                    rightRotate(&root, oldParent);
-                    balanceAfterInsert(root, oldParent);
-                }
-
-            }
-
-        }
-
-    }
-
+    treePrintIndented(rbtree->root, 0, print);
 }
 
-static bool uNodeIsBlackOrNull(RbNode* uNode)
+#define INDENTATION_LEVEL (2)
+
+static void treePrintIndented(const RbNode* root, int depth, RbTree_print print)
 {
-    return (uNode == NULL || !uNode->red);
+    if (root)
+    {
+        /* print right subtree */
+        treePrintIndented(root->right, depth + 1, print);
+        for (int i = 0; i < INDENTATION_LEVEL * depth; ++i)
+        {
+            printf(" ");
+        }
+        print(root);
+        /* print left subtree */
+        treePrintIndented(root->left, depth + 1, print);
+    }
 }
+
+
+static void balanceAfterInsert(RbNode** root, RbNode* current)
+{
+    while (current->parent != NULL && current->parent->color == RED)
+    {
+
+        if (current->parent == current->parent->parent->left)
+        {
+            RbNode* uncle = current->parent->parent->right;
+            // case 1:if uncle is red
+            if (uncle != NULL && uncle->color == RED)
+            {
+                current->parent->color = BLACK;
+                uncle->color = BLACK;
+                current->parent->parent->color = RED;
+                current = current->parent->parent;
+            }
+            /* case 2 & 3: uncle is black */
+            else
+            {
+                if (current == current->parent->right)
+                {
+                    current = current->parent;
+                    leftRotate(root, current);
+                }
+                /* case 3 */
+                current->parent->color = BLACK;
+                current->parent->parent->color = RED;
+                rightRotate(root, current->parent->parent);
+            }
+        }
+        /* mirror with previous */
+        else
+        {
+            RbNode* uncle = current->parent->parent->left;
+            // case 1:if uncle is red
+            if (uncle != NULL && uncle->color == RED)
+            {
+                current->parent->color = BLACK;
+                uncle->color = BLACK;
+                current->parent->parent->color = RED;
+                current = current->parent->parent;
+            }
+            /* case 2 & 3: uncle is black */
+            else
+            {
+                if (current == current->parent->left)
+                {
+                    current = current->parent;
+                    rightRotate(root, current);
+                }
+                /* case 3 */
+                current->parent->color = BLACK;
+                current->parent->parent->color = RED;
+                leftRotate(root, current->parent->parent);
+            }
+        }
+    }
+    (*root)->color = BLACK;
+}
+
+
 
 static void leftRotate(RbNode** root, RbNode* pivot)
 {
@@ -344,7 +442,7 @@ static void leftRotate(RbNode** root, RbNode* pivot)
     else
     {
         oldRight->parent = NULL;
-        oldRight->red = false;
+        oldRight->color = BLACK;
         *root = oldRight;
     }
 
@@ -381,6 +479,7 @@ static void rightRotate(RbNode** root, RbNode* pivot)
         {
             pivot->parent->right = oldLeft;
         }
+
         if (oldLeft != NULL)
         {
             oldLeft->parent = pivot->parent;
@@ -389,7 +488,7 @@ static void rightRotate(RbNode** root, RbNode* pivot)
     else
     {
         oldLeft->parent = NULL;
-        oldLeft->red = false;
+        oldLeft->color = BLACK;
         *root = oldLeft;
     }
 
@@ -405,116 +504,10 @@ static void rightRotate(RbNode** root, RbNode* pivot)
         rightOfOldLeft->parent = pivot;
     }
 }
-static RbNode* successor(RbNode* node)
+
+static int colorOf(RbNode* p)
 {
-    if (node == NULL)
-    {
-        return NULL;
-    }
-
-    if (node->right != NULL)
-    {
-        RbNode* p = node->right;
-        while (p->left != NULL)
-        {
-            p = p->left;
-        }
-        return p;
-    }
-    else
-    {
-        RbNode* p = node->parent;
-        RbNode* ch = node;
-        while (p != NULL && ch == p->right)
-        {
-            ch = p;
-            p = p->parent;
-        }
-        return p;
-    }
-}
-
-static void fixAfterDelection(RbTree* rbtree, RbNode* node)
-{
-    RbNode* root = rbtree->root;
-    while (node != root && colorOf(node) == BLACK)
-    {
-        if (node == leftOf(parentOf(node)))
-        {
-
-            RbNode* sib = rightOf(parentOf(node));
-
-            if (colorOf(sib) == RED)
-            {
-                setColor(sib, BLACK);
-                setColor(parentOf(node), RED);
-                leftRotate(&root, parentOf(node));
-                sib = rightOf(parentOf(node));
-            }
-
-            if (colorOf(leftOf(sib)) == BLACK &&
-                    colorOf(rightOf(sib)) == BLACK)
-            {
-                setColor(sib, RED);
-                node = parentOf(node);
-            }
-            else
-            {
-                if (colorOf(rightOf(sib)) == BLACK)
-                {
-                    setColor(leftOf(sib), BLACK);
-                    setColor(sib, RED);
-                    rightRotate(&root, sib);
-                    sib = rightOf(parentOf(node));
-                }
-                setColor(sib, colorOf(parentOf(node)));
-                setColor(parentOf(node), BLACK);
-                setColor(rightOf(sib), BLACK);
-                leftRotate(&root, parentOf(node));
-                node = root;
-            }// symmetric
-        }
-        else
-        {
-            RbNode* sib = leftOf(parentOf(node));
-            if (colorOf(sib) == RED)
-            {
-                setColor(sib, BLACK);
-                setColor(parentOf(node), RED);
-                rightRotate(&root, parentOf(node));
-                sib = leftOf(parentOf(node));
-            }
-            if (colorOf(rightOf(sib)) == BLACK &&
-                    colorOf(leftOf(sib)) == BLACK)
-            {
-                setColor(sib, RED);
-                node = parentOf(node);
-            }
-            else
-            {
-                if (colorOf(leftOf(sib)) == BLACK)
-                {
-                    setColor(rightOf(sib), BLACK);
-                    setColor(sib, RED);
-                    leftRotate(&root, sib);
-                    sib = leftOf(parentOf(node));
-                }
-                setColor(sib, colorOf(parentOf(node)));
-                setColor(parentOf(node), BLACK);
-                setColor(leftOf(node), BLACK);
-                rightRotate(&root, parentOf(node));
-                node = root;
-
-            }
-        }
-    }
-
-    setColor(node, BLACK);
-}
-
-static bool colorOf(RbNode* p)
-{
-    return (p == NULL ? BLACK : p->red);
+    return (p == NULL ? BLACK : p->color);
 }
 
 static RbNode* parentOf(RbNode* p)
@@ -522,11 +515,11 @@ static RbNode* parentOf(RbNode* p)
     return (p == NULL ? NULL : p->parent);
 }
 
-static void setColor(RbNode* p, bool color)
+static void setColor(RbNode* p, int color)
 {
     if (p != NULL)
     {
-        p->red = color;
+        p->color = color;
     }
 }
 
