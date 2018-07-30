@@ -5,18 +5,23 @@
 char* tests[] = { "test1 data", "test2 data", "test3 data" };
 #define NUM_TESTS 3
 
-int main(void)
+TEST(test_stack)
 {
     debug("----Test_stack.c----");
     Stack* stack = New_Stack();
     int i = 0;
-    for (i = 0; i < NUM_TESTS; i++) {
+    for (i = 0; i < NUM_TESTS; i++)
+    {
         Stack_push(stack, tests[i]);
     }
 
-    Stack_FOREACH(stack, cur) { printf("%s\n", (char*)cur->value); }
+    Stack_FOREACH(stack, cur)
+    {
+        printf("%s\n", (char*)cur->value);
+    }
 
-    for (i = NUM_TESTS - 1; i >= 0; i--) {
+    for (i = NUM_TESTS - 1; i >= 0; i--)
+    {
         char* val = Stack_pop(stack);
         printf("%s\n", val);
     }
@@ -24,3 +29,12 @@ int main(void)
     Stack_destory(stack);
     return 0;
 }
+
+TEST(all_tests)
+{
+    unit_suite_start();
+    unit_run_test(test_stack);
+    return NULL;
+}
+
+RUN_TESTS(all_tests);
