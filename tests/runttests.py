@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
-# Last modified: 2017-10-22 10:42:02
+# Last modified: 2018-07-31 11:58:54
 
 import subprocess
 import glob
@@ -28,9 +28,25 @@ def run_tests():
     """
     running tests files.
     """
+    complete = 0
+    failed = 0
+    failed_tests = []
+
     tests = find_all_tests()
+    print(len(tests))
     for test in tests:
-        subprocess.Popen('./tests/' + test)
+        try:
+            subprocess.run('./tests/' + test)
+            complete += 1
+        except subprocess.CalledProcessError:
+            failed += 1
+            failed_tests.append(test)
+
+    print("--------------------run test---------------------------")
+    print("Test finish")
+    print("Success:{}".format(complete))
+    print("Failed:{}".format(failed))
+    print("Failed files:{}".format(failed_tests))
 
 
 if __name__ == "__main__":
