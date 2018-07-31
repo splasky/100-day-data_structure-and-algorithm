@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
-# Last modified: 2018-07-31 11:58:54
+# Last modified: 2018-07-31 17:04:38
 
 import subprocess
 import glob
@@ -42,7 +42,7 @@ def run_tests():
             failed += 1
             failed_tests.append(test)
 
-    print("--------------------run test---------------------------")
+    print("---------------run test result-------------------")
     print("Test finish")
     print("Success:{}".format(complete))
     print("Failed:{}".format(failed))
