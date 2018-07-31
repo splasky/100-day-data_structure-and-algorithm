@@ -186,30 +186,9 @@ static RbNode* minValueNode(RbNode *node)
     return ptr;
 }
 
-static RbNode* deleteBST(RbNode* root, void* id, RbTree_compare compare)
-{
-    if (root == NULL)
-        return root;
-
-    if (compare(id, root->id) < 0)
-        return deleteBST(root->left, id, compare);
-
-
-    if (compare(id, root->id) > 0)
-        return deleteBST(root->right, id, compare);
-
-    if (root->left == NULL || root->right == NULL)
-        return root;
-
-    RbNode *temp = minValueNode(root->right);
-    root->data = temp->data;
-    root->id = temp->id;
-    return deleteBST(root->right, temp->id, compare);
-}
-
 bool RbTree_delete(RbTree* rbtree, void* id)
 {
-    RbNode* node = deleteBST(rbtree->root, id, rbtree->compare);
+    RbNode* node = RbTree_getNode(rbtree, id);
     if (node == rbtree->root)
     {
         if (rightOf(node))
