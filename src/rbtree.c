@@ -189,17 +189,23 @@ static RbNode* minValueNode(RbNode *node)
 bool RbTree_delete(RbTree* rbtree, void* id)
 {
     RbNode* node = RbTree_getNode(rbtree, id);
+    /* if is root */
+    if (!node)
+        return false;
+
     if (node == rbtree->root)
     {
-        if (rightOf(node))
+        if (leftOf(node))
         {
             node->right->parent = NULL;
-            rbtree->root = node->right;
+            rbtree->root = node->left;
+            setColor(rbtree->root, BLACK);
         }
-        else if (leftOf(node))
+        else if (rightOf(node))
         {
             node->right->parent = NULL;
             rbtree->root = node->right;
+            setColor(rbtree->root, BLACK);
         }
         else
         {
