@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
-# Last modified: 2018-07-31 17:04:38
+# Last modified: 2018-08-21 16:26:41
 
 import subprocess
 import glob
@@ -12,7 +12,8 @@ def find_all_tests(excludes=[]):
     find all tests inside tests directory.
     excludes:files won't test
     """
-    tests = list(map(lambda p: p.strip('/').split('/')[-1], sorted(glob.glob('tests/test_*'))))
+    tests = list(map(lambda p: p.strip('/').split('/')
+                     [-1], sorted(glob.glob('tests/test_*'))))
 
     for exclude in excludes:
         if exclude in tests:
@@ -36,7 +37,8 @@ def run_tests():
     print(len(tests))
     for test in tests:
         try:
-            subprocess.run('./tests/' + test)
+            ret = subprocess.run('./tests/' + test)
+            ret.check_returncode()
             complete += 1
         except subprocess.CalledProcessError:
             failed += 1
