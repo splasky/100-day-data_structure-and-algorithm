@@ -37,5 +37,6 @@ void* RbTree_get(RbTree* rbtree, void* id);
 void RbTree_destroy(RbTree* rbtree);
 void* RbTree_getNode(RbTree* rbtree, void* id);
 void RbTree_printTree(RbTree* rbtree, RbTree_print);
+RbNode* RbTree_min_node(RbNode *node);
 
 #endif /* end of include guard: RBTREE_H_SGKRD6D2 */

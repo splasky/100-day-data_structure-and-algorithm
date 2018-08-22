@@ -175,7 +175,7 @@ static void fixDeleteRBTree(RbTree* rbtree, RbNode *node)
     }
 }
 
-static RbNode* minValueNode(RbNode *node)
+RbNode* RbTree_min_node(RbNode *node)
 {
 
     RbNode *ptr = node;
