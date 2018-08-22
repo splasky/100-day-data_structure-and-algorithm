@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct tst_node {
+struct tst_node
+{
     char key;
     struct tst_node* lt;
     struct tst_node* eq;
@@ -15,14 +16,22 @@ int tst_contains(TST* t, const char* target)
 {
     check(target, "Target is NULL");
 
-    while (t) {
-        if (*target < t->key) {
+    while (t)
+    {
+        if (*target < t->key)
+        {
             t = t->lt;
-        } else if (*target > t->key) {
+        }
+        else if (*target > t->key)
+        {
             t = t->gt;
-        } else if (*target == '\0') {
+        }
+        else if (*target == '\0')
+        {
             return 1;
-        } else {
+        }
+        else
+        {
             t = t->eq;
             target++;
         }
@@ -32,39 +41,12 @@ error:
     return 0;
 }
 
-/* original recursive insert */
-static void tst_insert_recursive(TST** t, const char* key)
-{
-    if (*t == 0) {
-        *t = malloc(sizeof(**t));
-        check_mem(*t);
-        (*t)->key = *key;
-        (*t)->lt = (*t)->eq = (*t)->gt = 0;
-    }
-
-    /* now follow search */
-    if (*key < (*t)->key) {
-        tst_insert_recursive(&(*t)->lt, key);
-    } else if (*key > (*t)->key) {
-        tst_insert_recursive(&(*t)->gt, key);
-    } else if (*key == '\0') {
-        /* do nothing, we are done */
-        ;
-    } else {
-        tst_insert_recursive(&(*t)->eq, key + 1);
-    }
-error:
-    return;
-}
-
-/* iterative version of above, since somebody asked */
-/* This is pretty much standard tail-recursion elimination: */
-/* The whole function gets wrapped in a loop, and recursive
- * calls get replaced by assignment */
 static void tst_insert_iterative(TST** t, const char* key)
 {
-    for (;;) {
-        if (*t == 0) {
+    for (;;)
+    {
+        if (*t == 0)
+        {
             *t = malloc(sizeof(**t));
             check_mem(*t);
             (*t)->key = *key;
@@ -72,14 +54,21 @@ static void tst_insert_iterative(TST** t, const char* key)
         }
 
         /* now follow search */
-        if (*key < (*t)->key) {
+        if (*key < (*t)->key)
+        {
             t = &(*t)->lt;
-        } else if (*key > (*t)->key) {
+        }
+        else if (*key > (*t)->key)
+        {
             t = &(*t)->gt;
-        } else if (*key == '\0') {
+        }
+        else if (*key == '\0')
+        {
             /* do nothing, we are done */
             return;
-        } else {
+        }
+        else
+        {
             t = &(*t)->eq;
             key++;
         }
@@ -107,7 +96,8 @@ error:
 /* free a TST */
 void tst_destroy(TST* t)
 {
-    if (t) {
+    if (t)
+    {
         tst_destroy(t->lt);
         tst_destroy(t->eq);
         tst_destroy(t->gt);
