@@ -44,7 +44,7 @@ TEST(sorting)
     TEST_SORT(shell_sort);
     TEST_SORT(quick_sort);
     TEST_SORT(heap_sort);
-    /* TEST_SORT(merge_sort); */
+    TEST_SORT(merge_sort);
     return NULL;
 }
 

@@ -230,76 +230,68 @@ static void heap_sort(void* array,
     }
 }
 
-/* static void merge(const int n1,
-                  const void* a1,
-                  const int n2,
-                  const void* a2,
+static void merge(void* array,
+                  const size_t len,
                   const size_t object_size,
-                  Compare compare,
-                  const void* out)
-{
-    int i1 = 0,
-        i2 = 0, iout = 0;
+                  const int m,
+                  Compare compare)
 
-    while (i1 < n1 || i2 < n2)
+{
+    void* out = calloc(len, object_size);
+
+    int n = (int)len;
+    void* result;
+    for (int i = 0, j = m, k = 0; k < n; k++)
     {
-        if (i2 >= n2 || ((i1 < n1) && (compare((uint8_t*)a1 + i1 * object_size,
-                                               (uint8_t*)a2 + i2 * object_size) == IS_LESS)))
+        if (j == n)
         {
-            [>a1[i1] exists and is smaller<]
-            memmove((uint8_t*)out + iout * object_size,
-                    (uint8_t*)a1 + i1 * object_size,
-                    object_size);
-            ++i1;
+            result = (uint8_t*)array + i * object_size;
+            i++;
+        }
+        else if (i == m)
+        {
+            result = (uint8_t*)array + j * object_size;
+            j++;
+        }
+        else if (
+            compare((uint8_t*)array + j * object_size,
+                    (uint8_t*)array + i * object_size
+                   ) == IS_LESS)
+        {
+            result = (uint8_t*)array + j * object_size;
+            j++;
         }
         else
         {
-            memmove((uint8_t*)out + iout * object_size,
-                    (uint8_t*)a2 + i2 * object_size,
-                    object_size);
-            ++i2;
+            result = (uint8_t*)array + i * object_size;
+            i++;
         }
-        ++iout;
+
+        memcpy((uint8_t*)out + k * object_size, result, object_size);
     }
+    memcpy(array, out, len * object_size);
+    free(out);
 }
 
-static void merge_sort_inline(void* array,
-                              const size_t n,
-                              const size_t object_size,
-                              Compare compare,
-                              void* out)
+static void merge_sort(void* array,
+                       const size_t n,
+                       const size_t object_size,
+                       Compare compare)
 {
 
     if (n < 2)
     {
-        [>0 or 1 elements is already sorted<]
-        memcpy(out, array, sizeof(object_size) * n);
+        /*0 or 1 elements is already sorted*/
+        return;
     }
     else
     {
-        void* a1 = malloc(sizeof(object_size) * (n / 2));
-        void* a2 = malloc(sizeof(object_size) * (n - n / 2));
-
-        merge_sort_inline((uint8_t*)array, n / 2, object_size, compare, a1);
-        merge_sort_inline((uint8_t*)array + n / 2, n - n / 2, object_size, compare, a2);
-
-        [>merge results<]
-        merge(n / 2, a1, n - n / 2, a2, object_size, compare, out);
-        free(a1);
-        free(a2);
+        int m = n / 2;
+        merge_sort(array, m, object_size, compare);
+        merge_sort((uint8_t*)array + (object_size * m), n - m, object_size, compare);
+        /*merge results*/
+        merge(array, n, object_size, m, compare);
     }
 }
-
-static void merge_sort(void* array,
-                       const size_t len,
-                       const size_t object_size,
-                       Compare compare)
-{
-    void* out = calloc(len, sizeof(object_size));
-    merge_sort_inline(array, len, object_size, compare, out);
-    memcpy(array, out, sizeof(object_size)*len);
-    free(out);
-}
- */
 
 #endif //end of include guard: SORT_H_YH2ZDUCO
