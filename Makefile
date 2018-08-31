@@ -1,7 +1,6 @@
 CC=gcc
-CFLAGS = -O3 -Wall -Wextra -Isrc/ -rdynamic
-DCFLAGS =
-LDFLAGS = -ldl $(OPTLIBS)
+CFLAGS= -O3 -Werror -Wall -Wextra -Isrc/ -rdynamic
+LDFLAGS= -ldl $(OPTLIBS)
 PREFIX ?= /usr/local/
 
 SOURCES=$(wildcard src/*.c)
@@ -17,8 +16,9 @@ DYNAMIC=build/libmylib.so
 # The Target Build
 all: $(TARGET) tests $(DYNAMIC)
 
-dev: CFLAGS=-g -Wall -Isrc -Wall -Wextra $(OPTFLAGS)
-dev: all
+dev: CFLAGS += -g
+dev: CFLAGS := $(filter-out -O3,$(CFLAGS))
+dev: $(TARGET) tests valgrind
 
 $(TARGET): CFLAGS += -fPIC
 $(TARGET): build $(OBJECTS)
@@ -36,7 +36,7 @@ build:
 	@mkdir -p build
 
 # The Unit Tests
-.PHONY: tests
+.PHONY: tests clean valgrind
 tests: LDLIBS +=-L./build -lmylib
 tests: $(TESTS)
 	python ./tests/runttests.py
