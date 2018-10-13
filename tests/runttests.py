@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
-# Last modified: 2018-08-21 16:26:41
+# Last modified: 2018-10-13 11:32:39
 
 import subprocess
 import glob
@@ -37,7 +37,9 @@ def run_tests():
     print(len(tests))
     for test in tests:
         try:
-            ret = subprocess.run('./tests/' + test)
+            ret = subprocess.run('./tests/' + test,
+                                 stdout=subprocess.DEVNULL,
+                                 )
             ret.check_returncode()
             complete += 1
         except subprocess.CalledProcessError:

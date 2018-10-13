@@ -42,7 +42,7 @@ tests: $(TESTS)
 	python ./tests/runttests.py
 
 valgrind:
-	VALGRIND="valgrind --log-file=valgrind-%p.log" $(MAKE)
+	VALGRIND="valgrind --log-file=valgrind-%p.log"
 
 # The Cleaner
 clean:
