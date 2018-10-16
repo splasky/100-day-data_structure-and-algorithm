@@ -8,19 +8,22 @@
 typedef struct ListNode ListNode;
 typedef struct LinkedList_t LinkedList;
 
-struct ListNode {
+struct ListNode
+{
     void* value;
     ListNode* prev;
     ListNode* next;
 };
 
-struct LinkedList_t {
+struct LinkedList_t
+{
     int count;
     ListNode* tail;
     ListNode* head;
 };
 
-typedef struct LinkedList_Iterator_t {
+typedef struct LinkedList_Iterator_t
+{
     LinkedList* list;
     ListNode* position;
     uint64_t index;
@@ -62,15 +65,4 @@ void* LinkedList_Iterate(LinkedList_Iterator* iterator);
 void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* list);
 void LinkedList_ResetIterator(LinkedList_Iterator* iterator);
 
-/*
- * L:list
- * S:first node
- * N:next or prev
- * C:current node
- */
-/* TODO:_node change to hash */
-#define LINKEDLIST_FOREACH(L, S, N, C)                                                   \
-    ListNode* _node = NULL;                                                              \
-    ListNode* C = NULL;                                                                  \
-    for (C = _node = L->S; _node != NULL; C = _node = _node->N)
 #endif /* ifndef LIST_H */

@@ -25,7 +25,8 @@ LinkedList* SetTestingList(int size)
 {
     LinkedList* llist = New_LinkedList();
 
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
         int* p = calloc(1, sizeof(int));
         *p = i;
         LinkedList_push(llist, p);
@@ -131,7 +132,7 @@ static int int_comparator(const void* a, const void* b)
 
     if (*(int*)a == *(int*)b)
         return 0;
-    else if (*(int*)a < *(int*)b)
+    else if (*(int*)a < * (int*)b)
         return -1;
     return 1;
 }
@@ -143,17 +144,17 @@ TEST(test_merge_sort)
     int list_len = sizeof(array) / sizeof(array[0]);
     LinkedList* list = New_LinkedList();
 
-    for (int i = 0; i < list_len; ++i) {
+    for (int i = 0; i < list_len; ++i)
+    {
         LinkedList_push(list, &array[i]);
     }
 
     list = LinkedList_merge_sort(list, int_comparator);
 
     int i = 0;
-    LINKEDLIST_FOREACH(list, head, next, cur)
+    for (ListNode* curr = list->head; curr != NULL; curr = curr->next)
     {
-        /* unit_assert(*(int*)cur->value == i, "Linkedlist mergesort test failed"); */
-        printf("%d\t", *(int*)cur->value);
+        unit_assert(*(int*)curr->value == i, "Linkedlist mergesort test failed");
         ++i;
     }
     printf("\n");

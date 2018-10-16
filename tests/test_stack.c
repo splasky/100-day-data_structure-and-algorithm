@@ -7,17 +7,11 @@ char* tests[] = { "test1 data", "test2 data", "test3 data" };
 
 TEST(test_stack)
 {
-    debug("----Test_stack.c----");
     Stack* stack = New_Stack();
     int i = 0;
     for (i = 0; i < NUM_TESTS; i++)
     {
         Stack_push(stack, tests[i]);
-    }
-
-    Stack_FOREACH(stack, cur)
-    {
-        printf("%s\n", (char*)cur->value);
     }
 
     for (i = NUM_TESTS - 1; i >= 0; i--)
