@@ -10,4 +10,6 @@
 #define C_CYAN "\033[1;36m"
 #define C_GRAY "\033[1;90m"
 
+char* open_file(char* file);
+
 #endif /* ifndef SYMBOL */
