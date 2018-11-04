@@ -65,5 +65,10 @@ void* LinkedList_Iterate(LinkedList_Iterator* iterator);
 void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* list);
 void LinkedList_ResetIterator(LinkedList_Iterator* iterator);
 
-void list_foreach(LinkedList* list, void (*func_call_back)(void*));
+/* L is list , pos is current node name
+ * retrive data by post->data
+ * */
+#define list_foreach(L,pos)\
+    for(ListNode* pos=L->head;pos!=L->tail;pos=pos->next)
+
 #endif /* ifndef LIST_H */
