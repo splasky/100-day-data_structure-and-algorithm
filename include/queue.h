@@ -15,4 +15,5 @@ typedef LinkedList Queue;
 #define Queue_peek LinkedList_first
 #define Queue_count LinkedList_count
 
+#define Queue_foreach list_foreach
 #endif /* end of include guard: QUEUE_H_HTFODBQ3 */
