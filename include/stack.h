@@ -14,4 +14,5 @@ typedef LinkedList Stack;
 #define Stack_peek LinkedList_last
 
 #define Stack_count LinkedList_count
+#define stack_foreach list_foreach
 #endif /* end of include guard: STACK_H_LL2XHNA8 */
