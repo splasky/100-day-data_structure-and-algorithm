@@ -65,4 +65,5 @@ void* LinkedList_Iterate(LinkedList_Iterator* iterator);
 void LinkedList_InitializeIterator(LinkedList_Iterator* iterator, LinkedList* list);
 void LinkedList_ResetIterator(LinkedList_Iterator* iterator);
 
+void list_foreach(LinkedList* list, void (*func_call_back)(void*));
 #endif /* ifndef LIST_H */
