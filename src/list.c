@@ -408,11 +408,3 @@ void LinkedList_ResetIterator(LinkedList_Iterator* iterator)
 error:
     log_err("Reset iterator failed");
 }
-
-void list_foreach(LinkedList* list, void (*func_call_back)(void* param))
-{
-    for (ListNode* tmp  = list->head; tmp != list->tail; tmp = tmp->next)
-    {
-        func_call_back(tmp->value);
-    }
-}
