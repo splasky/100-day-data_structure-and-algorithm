@@ -69,6 +69,6 @@ void LinkedList_ResetIterator(LinkedList_Iterator* iterator);
  * retrive data by post->data
  * */
 #define list_foreach(L,pos)\
-    for(ListNode* pos=L->head;pos!=L->tail;pos=pos->next)
+    for(ListNode* pos=L->head;pos!=NULL;pos=pos->next)
 
 #endif /* ifndef LIST_H */
